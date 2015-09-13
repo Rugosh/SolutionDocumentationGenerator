@@ -118,5 +118,70 @@ businessobject TestBO {
             Assert.AreEqual(1, e.Annotation.Count);
             Assert.AreEqual("AlternativeKey", e.Annotation.First.Value.Name);
         }
+
+        [TestMethod]
+        public void SimpleBusinessObjectWithMessageTest() {
+            var boText = @"import AP.Common.GDT as apCommonGDT;
+
+businessobject TestBO {
+
+        message TEST_MESSAGE_ABC text ""Some message text"";
+
+		element TestBO_ID :ID;
+}";
+
+            var parser = new BusinessObjectParser(TestConfiguration);
+            var parsedBo = parser.ParseBusinessObject(boText);
+
+            // Check BO Root Node
+            Assert.AreEqual("TestBO", parsedBo.Name);
+            Assert.AreEqual(NodeType.BusinessObject, parsedBo.NodeType);
+
+            // Check Element
+            Assert.AreEqual(1, parsedBo.Element.Count);
+            var e = parsedBo.Element.First.Value;
+            Assert.AreEqual("TestBO_ID", e.Name);
+            Assert.AreEqual("ID", e.DataType);
+
+            // Check Message
+            Assert.AreEqual(1, parsedBo.Message.Count);
+            var m = parsedBo.Message.First.Value;
+            Assert.AreEqual("TEST_MESSAGE_ABC", m.Name);
+            Assert.AreEqual("Some message text", m.Text);
+            Assert.AreEqual(0, m.PlaceHolderDataTypes.Count);
+        }
+
+        [TestMethod]
+        public void SimpleBusinessObjectWithMessageAndParametersTest() {
+            var boText = @"import AP.Common.GDT as apCommonGDT;
+
+businessobject TestBO {
+
+        message TEST_MESSAGE_ABC text ""Some message with Para1: &  and para 2 : & and #3 &"": LANGUAGEINDEPENDENT_EXTENDED_Text, LANGUAGEINDEPENDENT_EXTENDED_Text, LANGUAGEINDEPENDENT_EXTENDED_Text;
+
+		element TestBO_ID :ID;
+}";
+
+            var parser = new BusinessObjectParser(TestConfiguration);
+            var parsedBo = parser.ParseBusinessObject(boText);
+
+            // Check BO Root Node
+            Assert.AreEqual("TestBO", parsedBo.Name);
+            Assert.AreEqual(NodeType.BusinessObject, parsedBo.NodeType);
+
+            // Check Element
+            Assert.AreEqual(1, parsedBo.Element.Count);
+            var e = parsedBo.Element.First.Value;
+            Assert.AreEqual("TestBO_ID", e.Name);
+            Assert.AreEqual("ID", e.DataType);
+
+            // Check Message
+            Assert.AreEqual(1, parsedBo.Message.Count);
+            var m = parsedBo.Message.First.Value;
+            Assert.AreEqual("TEST_MESSAGE_ABC", m.Name);
+            Assert.AreEqual("Some message with Para1: &  and para 2 : & and #3 &", m.Text);
+            Assert.AreEqual(3, m.PlaceHolderDataTypes.Count);
+            Assert.AreEqual("LANGUAGEINDEPENDENT_EXTENDED_Text", m.PlaceHolderDataTypes.First.Value);
+        }
     }
 }

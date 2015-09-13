@@ -146,7 +146,34 @@ namespace ByDSolutionDocumentationGenerator.Parser {
         private Message ParseMessage(string line) {
             var message = new Message();
 
-            // TODO
+            line = line.Split(SPACER, 2, StringSplitOptions.RemoveEmptyEntries)[1];
+
+            var splittedLine = line.Split(new string[1] { " text " }, 2, StringSplitOptions.RemoveEmptyEntries);
+
+            message.Name = splittedLine.First();
+
+            var messageText = CleanLineEnding(splittedLine.Last().Trim());
+
+            var lastParamSpacer = messageText.LastIndexOf(',');
+            var lastQuote = messageText.LastIndexOf('"');
+
+            while (lastParamSpacer > lastQuote) {
+                message.PlaceHolderDataTypes.AddLast(messageText.Substring(lastParamSpacer + 1).Trim());
+
+                messageText = messageText.Substring(0, lastParamSpacer);
+
+                lastParamSpacer = messageText.LastIndexOf(',');
+                lastQuote = messageText.LastIndexOf('"');
+            }
+
+            lastParamSpacer = messageText.LastIndexOf(':');
+            if (lastParamSpacer > lastQuote) {
+                message.PlaceHolderDataTypes.AddLast(messageText.Substring(lastParamSpacer + 1).Trim());
+
+                messageText = messageText.Substring(0, lastParamSpacer);
+            }
+
+            message.Text = messageText.Substring(1, messageText.Length - 2);
 
             return message;
         }
