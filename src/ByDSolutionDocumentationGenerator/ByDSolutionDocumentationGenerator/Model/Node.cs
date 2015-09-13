@@ -9,6 +9,8 @@ namespace ByDSolutionDocumentationGenerator.Model {
 
         public NodeType NodeType;
 
+        public Multiplicity Multiplicity;
+
         public string Name;
 
         public LinkedList<Annotation> Annotation;

@@ -183,5 +183,137 @@ businessobject TestBO {
             Assert.AreEqual(3, m.PlaceHolderDataTypes.Count);
             Assert.AreEqual("LANGUAGEINDEPENDENT_EXTENDED_Text", m.PlaceHolderDataTypes.First.Value);
         }
+
+        [TestMethod]
+        public void SimpleBusinessObjectWithNodeTest() {
+            var boText = @"import AP.Common.GDT as apCommonGDT;
+
+businessobject TestBO {
+
+		element TestBO_ID :ID;
+
+	    node SomeNode [0,n]{
+	
+		    [Transient]
+		    [Label (""element1"")]
+		    element element1 : Percent;
+
+		    [Label (""element2"")]
+		    element element2 :ID;
+
+		    association ToSomething to Something;
+	    }
+}";
+
+            var parser = new BusinessObjectParser(TestConfiguration);
+            var parsedBo = parser.ParseBusinessObject(boText);
+
+            // Check BO Root Node
+            Assert.AreEqual("TestBO", parsedBo.Name);
+            Assert.AreEqual(NodeType.BusinessObject, parsedBo.NodeType);
+
+            // Check Element
+            Assert.AreEqual(1, parsedBo.Element.Count);
+            var e = parsedBo.Element.First.Value;
+            Assert.AreEqual("TestBO_ID", e.Name);
+            Assert.AreEqual("ID", e.DataType);
+            Assert.AreEqual(0, e.Annotation.Count);
+
+            // Check ChildNode
+            Assert.AreEqual(1, parsedBo.ChildNode.Count);
+            Assert.AreEqual(Multiplicity.ZeroToN, parsedBo.ChildNode.First.Value.Multiplicity);
+
+            // Check Child Node Content
+            Assert.AreEqual(2, parsedBo.ChildNode.First.Value.Element.Count);
+            Assert.AreEqual(1, parsedBo.ChildNode.First.Value.Association.Count);
+        }
+
+        [TestMethod]
+        public void SimpleBusinessObjectWithNodesTest() {
+            var boText = @"import AP.Common.GDT as apCommonGDT;
+
+businessobject TestBO {
+
+		element TestBO_ID :ID;
+
+	    node SomeNode [0,n]{
+
+		    [Label (""element1"")]
+		    element element1 :ID;
+	    }
+
+	    node SomeOtherNode [0,n]{
+
+		    [Label (""element1"")]
+		    element element1 :ID;
+	    }
+}";
+
+            var parser = new BusinessObjectParser(TestConfiguration);
+            var parsedBo = parser.ParseBusinessObject(boText);
+
+            // Check BO Root Node
+            Assert.AreEqual("TestBO", parsedBo.Name);
+            Assert.AreEqual(NodeType.BusinessObject, parsedBo.NodeType);
+
+            // Check Element
+            Assert.AreEqual(1, parsedBo.Element.Count);
+            var e = parsedBo.Element.First.Value;
+            Assert.AreEqual("TestBO_ID", e.Name);
+            Assert.AreEqual("ID", e.DataType);
+            Assert.AreEqual(0, e.Annotation.Count);
+
+            // Check ChildNodes
+            Assert.AreEqual(2, parsedBo.ChildNode.Count);
+        }
+
+        [TestMethod]
+        public void SimpleBusinessObjectWithNodeHierarchieTest() {
+            var boText = @"import AP.Common.GDT as apCommonGDT;
+
+businessobject TestBO {
+
+		element TestBO_ID :ID;
+
+	    node SomeNode [0,n]{
+
+		    [Label (""element1"")]
+		    element element1 :ID;
+
+	        node SomeOtherNode [0,n]{
+
+		        [Label (""element1"")]
+		        element element1 :ID;
+
+                node AgainSomeOtherNode [0,n]{
+
+		            [Label (""element1"")]
+		            element element1 :ID;
+	            }
+	        }
+	    }
+
+
+}";
+
+            var parser = new BusinessObjectParser(TestConfiguration);
+            var parsedBo = parser.ParseBusinessObject(boText);
+
+            // Check BO Root Node
+            Assert.AreEqual("TestBO", parsedBo.Name);
+            Assert.AreEqual(NodeType.BusinessObject, parsedBo.NodeType);
+
+            // Check Element
+            Assert.AreEqual(1, parsedBo.Element.Count);
+            var e = parsedBo.Element.First.Value;
+            Assert.AreEqual("TestBO_ID", e.Name);
+            Assert.AreEqual("ID", e.DataType);
+            Assert.AreEqual(0, e.Annotation.Count);
+
+            // Check ChildNodes
+            Assert.AreEqual(1, parsedBo.ChildNode.Count);
+            Assert.AreEqual(1, parsedBo.ChildNode.First.Value.ChildNode.Count);
+            Assert.AreEqual(1, parsedBo.ChildNode.First.Value.ChildNode.First.Value.ChildNode.Count);
+        }
     }
 }

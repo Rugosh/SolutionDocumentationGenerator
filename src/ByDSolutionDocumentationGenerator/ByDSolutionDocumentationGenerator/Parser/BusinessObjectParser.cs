@@ -48,8 +48,10 @@ namespace ByDSolutionDocumentationGenerator.Parser {
         public Node ParseBusinessObject(string boText) {
             boText = preProcessText(boText);
 
+            var nodeHeap = new LinkedList<Node>();
             var boNode = new Node();
             boNode.NodeType = NodeType.BusinessObject;
+            nodeHeap.AddLast(boNode);
 
             var currenctAnnotations = new LinkedList<Annotation>();
             foreach (var line in boText.Split('\n')) {
@@ -69,20 +71,28 @@ namespace ByDSolutionDocumentationGenerator.Parser {
                 }
 
                 if (parseLine.StartsWith("businessobject")) {
-                    boNode.Name = CleanLineEnding(parseLine.Split(SPACER)[1]);
-                    boNode.Annotation = currenctAnnotations;
+                    nodeHeap.Last.Value.Name = CleanLineEnding(parseLine.Split(SPACER)[1]);
+                    nodeHeap.Last.Value.Annotation = currenctAnnotations;
 
                 } else if (parseLine.StartsWith("element")) {
-                    boNode.Element.AddLast(ParseElement(parseLine, currenctAnnotations));
+                    nodeHeap.Last.Value.Element.AddLast(ParseElement(parseLine, currenctAnnotations));
 
                 } else if (parseLine.StartsWith("association")) {
-                    boNode.Association.AddLast(ParseAssociation(parseLine, currenctAnnotations));
+                    nodeHeap.Last.Value.Association.AddLast(ParseAssociation(parseLine, currenctAnnotations));
 
                 } else if (parseLine.StartsWith("message")) {
-                    boNode.Message.AddLast(ParseMessage(parseLine));
+                    nodeHeap.Last.Value.Message.AddLast(ParseMessage(parseLine));
 
                 } else if (parseLine.StartsWith("node")) {
-                    // TODO
+                    var newNode = ParseNode(parseLine);
+                    nodeHeap.Last.Value.ChildNode.AddLast(newNode);
+                    nodeHeap.AddLast(newNode);
+
+                } else if (parseLine.StartsWith("}")) {
+                    // Node Close
+                    if (nodeHeap.Count > 1) {
+                        nodeHeap.RemoveLast();
+                    }
 
                 }
 
@@ -178,9 +188,41 @@ namespace ByDSolutionDocumentationGenerator.Parser {
             return message;
         }
 
-        private Multiplicity GetMultiplicity(string multi1, string multi2) {
+        private Node ParseNode(string line) {
+            var node = new Node();
 
-            return Multiplicity.ZeroToOne;
+            line = line.Split(SPACER, 2, StringSplitOptions.RemoveEmptyEntries)[1];
+            line = CleanLineEnding(line);
+
+            if (line.Contains("[")) {
+                var splittedLine = line.Split(new string[1] { "[" }, 2, StringSplitOptions.RemoveEmptyEntries);
+                node.Name = splittedLine.First();
+                line = splittedLine.Last().Replace("[", "").Replace("]", "");
+                splittedLine = line.Split(new string[1] { "," }, 2, StringSplitOptions.RemoveEmptyEntries);
+                node.Multiplicity = GetMultiplicity(splittedLine.First(), splittedLine.Last());
+            }
+
+            return node;
+        }
+
+        private Multiplicity GetMultiplicity(string multi1, string multi2) {
+            if (multi1 == "0" && multi2 == "1") {
+                return Multiplicity.ZeroToOne;
+            }
+
+            if (multi1 == "0" && multi2 == "n") {
+                return Multiplicity.ZeroToN;
+            }
+
+            if (multi1 == "1" && multi2 == "1") {
+                return Multiplicity.OneToOne;
+            }
+
+            if (multi1 == "1" && multi2 == "n") {
+                return Multiplicity.OneToN;
+            }
+
+            throw new Exception(string.Format("no matching Multiplicity found for the vars {0} and {1}", multi1, multi2));
         }
     }
 }
