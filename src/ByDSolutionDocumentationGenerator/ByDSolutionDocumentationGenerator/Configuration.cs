@@ -9,8 +9,11 @@ namespace ByDSolutionDocumentationGenerator {
 
         public Configuration() {
             Verbose = false;
+            SolutionPath = string.Empty;
         }
 
         public bool Verbose;
+
+        public string SolutionPath;
     }
 }

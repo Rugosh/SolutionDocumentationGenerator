@@ -49,13 +49,18 @@
     <Compile Include="Model\Multiplicity.cs" />
     <Compile Include="Model\Node.cs" />
     <Compile Include="Model\NodeType.cs" />
+    <Compile Include="Model\Solution.cs" />
     <Compile Include="Parser\BusinessObjectParser.cs" />
     <Compile Include="Parser\SolutionFileParser.cs" />
+    <Compile Include="Parser\SolutionParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DocuGenerator\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
