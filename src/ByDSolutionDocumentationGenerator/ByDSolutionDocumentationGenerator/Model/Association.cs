@@ -30,11 +30,13 @@ namespace ByDSolutionDocumentationGenerator.Model {
 
         public override string ToString() {
             var retString = new StringBuilder();
-            retString.AppendLine(base.ToString());
+            //retString.AppendLine(base.ToString());
 
             retString.AppendLine(string.Format("Association: {0}", Name));
             retString.AppendLine(string.Format("\tMultiplicity: {0}", Multiplicity));
-            retString.AppendLine(string.Format("\t{0}", Annotation));
+            foreach (var a in Annotation) {
+                retString.AppendLine(string.Format("\t{0}", a));
+            }
 
             return retString.ToString();
         }

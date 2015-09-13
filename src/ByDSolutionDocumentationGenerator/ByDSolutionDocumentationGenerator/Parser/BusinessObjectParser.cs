@@ -206,6 +206,9 @@ namespace ByDSolutionDocumentationGenerator.Parser {
         }
 
         private Multiplicity GetMultiplicity(string multi1, string multi2) {
+            multi1 = multi1.Trim();
+            multi2 = multi2.Trim();
+
             if (multi1 == "0" && multi2 == "1") {
                 return Multiplicity.ZeroToOne;
             }

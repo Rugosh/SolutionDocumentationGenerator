@@ -17,17 +17,23 @@ namespace ByDSolutionDocumentationGenerator.Parser {
 
         public Solution ParseSolution() {
             var solutionFileParser = new SolutionFileParser(configuration);
-            var solutionFilePath = Path.Combine(configuration.SolutionPath, string.Format("{0}.myproj", Path.GetDirectoryName(configuration.SolutionPath)));
-            var solution = solutionFileParser.ParseSolutionFile(solutionFilePath);
+            var solutionFilePath = Path.Combine(configuration.SolutionPath, string.Format("{0}.myproj", Path.GetFileName(configuration.SolutionPath)));
+            var solution = solutionFileParser.ParseSolutionFile(LoadFileContent(solutionFilePath));
 
-            // TODO
+            var boParser = new BusinessObjectParser(configuration);
+            foreach (var boFile in solution.BusinessObjectFiles) {
+                var fullBoPath = Path.Combine(configuration.SolutionPath, boFile);
+                var bo = boParser.ParseBusinessObject(LoadFileContent(fullBoPath));
+                solution.BusinessObjects.AddLast(bo);
+            }
 
             return solution;
         }
 
         private string LoadFileContent(string path) {
-            // TODO
-            return null;
+            using (var reader = new StreamReader(path)) {
+                return reader.ReadToEnd();
+            }
         }
     }
 }

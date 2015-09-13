@@ -21,7 +21,7 @@ namespace ByDSolutionDocumentationGenerator.Model {
 
         public override string ToString() {
             var retString = new StringBuilder();
-            retString.AppendLine(base.ToString());
+            //retString.AppendLine(base.ToString());
 
             retString.AppendLine(string.Format("Message: {0}", Name));
             retString.AppendLine(string.Format("\tText: {0}", Text));

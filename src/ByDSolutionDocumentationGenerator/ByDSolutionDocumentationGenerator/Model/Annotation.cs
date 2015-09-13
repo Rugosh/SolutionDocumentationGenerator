@@ -19,7 +19,7 @@ namespace ByDSolutionDocumentationGenerator.Model {
 
         public override string ToString() {
             var retString = new StringBuilder();
-            retString.AppendLine(base.ToString());
+            //retString.AppendLine(base.ToString());
 
             retString.AppendLine(string.Format("Annotation: {0}", Name));
 

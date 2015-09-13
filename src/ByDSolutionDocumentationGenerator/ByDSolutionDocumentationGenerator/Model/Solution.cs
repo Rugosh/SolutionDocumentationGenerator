@@ -18,5 +18,17 @@ namespace ByDSolutionDocumentationGenerator.Model {
             BusinessObjectFiles = new LinkedList<string>();
             BusinessObjects = new LinkedList<Node>();
         }
+
+        public override string ToString() {
+            var retString = new StringBuilder();
+            //retString.AppendLine(base.ToString());
+
+            retString.AppendLine(string.Format("Solution: {0}", Name));
+            foreach (var bo in this.BusinessObjects) {
+                retString.AppendLine(string.Format("{0}", bo.ToString()));
+            }
+
+            return retString.ToString();
+        }
     }
 }

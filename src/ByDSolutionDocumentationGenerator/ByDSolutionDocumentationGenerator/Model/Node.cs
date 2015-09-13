@@ -38,7 +38,7 @@ namespace ByDSolutionDocumentationGenerator.Model {
         public override string ToString() {
             var retString = new StringBuilder();
 
-            retString.AppendLine(base.ToString());
+            //retString.AppendLine(base.ToString());
             retString.AppendLine(string.Format("{0}: {1}", NodeType == NodeType.BusinessObject ? "Business Object" : "Node", Name));
             foreach (var a in Annotation) {
                 retString.AppendLine(string.Format("\t{0}", a.ToString()));
