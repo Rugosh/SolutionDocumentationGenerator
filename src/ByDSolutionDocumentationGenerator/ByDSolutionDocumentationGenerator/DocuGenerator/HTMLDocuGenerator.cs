@@ -9,6 +9,28 @@ using System.Xml;
 namespace ByDSolutionDocumentationGenerator.DocuGenerator {
     public class HTMLDocuGenerator {
 
+        private const string html = "html";
+        private const string htmlH1 = "h1";
+        private const string htmlBody = "body";
+        private const string htmlHead = "head";
+        private const string htmlTextOutputElement = "span";
+        private const string htmlDiv = "div";
+
+        private const string htmlClass = "class";
+        private const string htmlClassDataType = "datatype";
+        private const string htmlClassName = "name";
+
+        private const string htmlClassBoElementCollection = "elementCollection";
+        private const string htmlClassBoElement = "element";
+
+        private const string htmlClassAnnotationCollection = "annotationcollection";
+        private const string htmlClassAnnntation = "annotation";
+
+        private const string htmlClassMessageCollection = "messagecollection";
+        private const string htmlClassMessage = "message";
+        private const string htmlClassMessageText = "messageText";
+        private const string htmlClassMessageDataTypes = "messagedatatypes";
+
         private Configuration configuration;
 
         public HTMLDocuGenerator(Configuration configuration) {
@@ -25,9 +47,9 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                 var boContenten = new StringBuilder();
 
                 var htmlDoc = GetBaseHtmlDocument(string.Format("BO: {0}", bo.Name));
-                var body = htmlDoc.CreateElement("body");
+                var body = htmlDoc.CreateElement(htmlBody);
 
-                body.AppendChild(GetSimpleHTMLElement(htmlDoc, "h1", string.Format("Business Object: {0}", bo.Name)));
+                body.AppendChild(GetSimpleHTMLElement(htmlDoc, htmlH1, string.Format("Business Object: {0}", bo.Name)));
 
                 if (bo.Element.Count > 0) {
                     body.AppendChild(GenerateElemementPart(htmlDoc, bo.Element));
@@ -44,23 +66,26 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                 if (System.IO.File.Exists(filename)) {
                     System.IO.File.Delete(filename);
                 }
+                if (configuration.Verbose) {
+                    Console.WriteLine(string.Format("Write BO file: {0}", filename));
+                }
                 htmlDoc.Save(filename);
             }
         }
 
         private XmlElement GenerateElemementPart(XmlDocument baseDocument, LinkedList<Element> elements) {
-            var elementDiv = GetDiv(baseDocument, "elementcollection");
+            var elementDiv = GetDiv(baseDocument, htmlClassBoElementCollection);
 
             foreach (var e in elements) {
-                var element = GetDiv(baseDocument, "element");
-                element.AppendChild(GetSimpleHTMLElement(baseDocument, "span", e.Name, "name"));
-                element.AppendChild(GetSimpleHTMLElement(baseDocument, "span", e.DataType, "datatype"));
+                var element = GetDiv(baseDocument, htmlClassBoElement);
+                element.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, e.Name, htmlClassName));
+                element.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, e.DataType, htmlClassDataType));
 
                 if (e.Annotation.Count > 0) {
-                    var annotation = GetDiv(baseDocument, "annotation");
+                    var annotation = GetDiv(baseDocument, htmlClassAnnotationCollection);
 
                     foreach (var a in e.Annotation) {
-                        annotation.AppendChild(GetSimpleHTMLElement(baseDocument, "span", a.Name, "annotation"));
+                        annotation.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassAnnntation));
                     }
 
                     element.AppendChild(annotation);
@@ -73,18 +98,18 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
         }
 
         private XmlElement GenerateMessagePart(XmlDocument baseDocument, LinkedList<Message> messages) {
-            var messageDiv = GetDiv(baseDocument, "messagecollection");
+            var messageDiv = GetDiv(baseDocument, htmlClassMessageCollection);
 
             foreach (var m in messages) {
-                var message = GetDiv(baseDocument, "message");
-                message.AppendChild(GetSimpleHTMLElement(baseDocument, "span", m.Name, "name"));
-                message.AppendChild(GetSimpleHTMLElement(baseDocument, "span", m.Text, "messagetext"));
+                var message = GetDiv(baseDocument, htmlClassMessage);
+                message.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, m.Name, htmlClassName));
+                message.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, m.Text, htmlClassMessageText));
 
                 if (m.PlaceHolderDataTypes.Count > 0) {
-                    var datatypes = GetDiv(baseDocument, "messagedatatypes");
+                    var datatypes = GetDiv(baseDocument, htmlClassMessageDataTypes);
 
                     foreach (var dt in m.PlaceHolderDataTypes) {
-                        message.AppendChild(GetSimpleHTMLElement(baseDocument, "span", dt, "datatype"));
+                        message.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, dt, htmlClassDataType));
                     }
 
                     message.AppendChild(datatypes);
@@ -97,7 +122,7 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
         }
 
         private XmlElement GetDiv(XmlDocument baseDocument) {
-            return baseDocument.CreateElement("div");
+            return baseDocument.CreateElement(htmlDiv);
         }
 
         private XmlElement GetDiv(XmlDocument baseDocument, string classValue) {
@@ -125,7 +150,7 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
         }
 
         private XmlAttribute GetClass(XmlDocument baseDocument, string value) {
-            var elementAttribute = baseDocument.CreateAttribute("class");
+            var elementAttribute = baseDocument.CreateAttribute(htmlClass);
             elementAttribute.Value = value;
 
             return elementAttribute;
@@ -133,12 +158,12 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
         private XmlDocument GetBaseHtmlDocument(string title) {
             var htmlDoc = new XmlDocument();
-            var docType = htmlDoc.CreateDocumentType("html", null, null, null);
+            var docType = htmlDoc.CreateDocumentType(html, null, null, null);
             htmlDoc.AppendChild(docType);
-            var root = htmlDoc.CreateElement("html");
+            var root = htmlDoc.CreateElement(html);
             htmlDoc.AppendChild(root);
 
-            var head = htmlDoc.CreateElement("head");
+            var head = htmlDoc.CreateElement(htmlHead);
             root.AppendChild(head);
 
             var metadata = htmlDoc.CreateElement("meta");
