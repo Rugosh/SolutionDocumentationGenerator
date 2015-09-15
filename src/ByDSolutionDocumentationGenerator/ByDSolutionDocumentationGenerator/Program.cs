@@ -22,13 +22,32 @@ namespace ByDSolutionDocumentationGenerator {
                 } else if (i == "-h" || i == "--help") {
                     
                 }else {
-                    configuration.SolutionPath = i;
+                    if (configuration.SolutionPath == string.Empty) {
+                        configuration.SolutionPath = i;
+                    } else {
+                        configuration.OutputDir = i;
+                    }
                 }
             }
 
             if (configuration.SolutionPath == string.Empty) {
                 PrintHelp();
                 return;
+            } else {
+                if (System.IO.Directory.Exists(configuration.SolutionPath) == false) {
+                    Console.WriteLine("The following soultion path does not exist: {0}", configuration.SolutionPath);
+                    return;
+                }
+            }
+
+            if (configuration.OutputDir == string.Empty) {
+                // TODO: set default
+
+            } else {
+                if (System.IO.Directory.Exists(configuration.OutputDir) == false) {
+                    Console.WriteLine("The following output path does not exist: {0}", configuration.OutputDir);
+                    return;
+                }
             }
 
             // Parse Solution
@@ -39,15 +58,14 @@ namespace ByDSolutionDocumentationGenerator {
                 Console.WriteLine(solution.ToString());
             }
 
-            // TODO: Generate Documentation
-            configuration.OutputDir = @"D:\dev\_testdata\bydDocu";
+            // Generate Documentation
             var htmlGenerator = new HTMLDocuGenerator(configuration);
             htmlGenerator.GenerateDocumenation(solution);
         }
 
         private static void PrintHelp() {
             Console.WriteLine("Usage:");
-            Console.WriteLine("<programm> [params] pathToStudioProjectFolder");
+            Console.WriteLine("<programm> [params] pathToStudioProjectFolder [outputDir]");
             Console.WriteLine("Parameters:");
             Console.WriteLine("-v|--verbose");
             Console.WriteLine("\tPrints more information out to the console");
