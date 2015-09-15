@@ -119,7 +119,7 @@ namespace ByDSolutionDocumentationGenerator.Parser {
 
             var elementSplitValues = elementNameAndDataType.Split(new char[1] { ':' }, StringSplitOptions.RemoveEmptyEntries);
             newElement.Name = elementSplitValues[0].Trim();
-            newElement.DataType = CleanLineEnding(elementSplitValues[1]);
+            newElement.DataType = CleanLineEnding(elementSplitValues[1]).Trim();
 
             newElement.Annotation = annotation;
             return newElement;
