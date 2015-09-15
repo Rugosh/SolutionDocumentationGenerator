@@ -10,10 +10,13 @@ namespace ByDSolutionDocumentationGenerator {
         public Configuration() {
             Verbose = false;
             SolutionPath = string.Empty;
+            OutputDir = string.Empty;
         }
 
         public bool Verbose;
 
         public string SolutionPath;
+
+        public string OutputDir;
     }
 }

@@ -1,4 +1,5 @@
-﻿using ByDSolutionDocumentationGenerator.Parser;
+﻿using ByDSolutionDocumentationGenerator.DocuGenerator;
+using ByDSolutionDocumentationGenerator.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,9 @@ namespace ByDSolutionDocumentationGenerator {
             }
 
             // TODO: Generate Documentation
+            configuration.OutputDir = @"D:\dev\_testdata\bydDocu";
+            var htmlGenerator = new HTMLDocuGenerator(configuration);
+            htmlGenerator.GenerateDocumenation(solution);
         }
 
         private static void PrintHelp() {
