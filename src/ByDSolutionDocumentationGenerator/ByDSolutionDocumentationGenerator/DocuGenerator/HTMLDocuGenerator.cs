@@ -33,6 +33,10 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                     body.AppendChild(GenerateElemementPart(htmlDoc, bo.Element));
                 }
 
+                if (bo.Message.Count > 0) {
+                    body.AppendChild(GenerateMessagePart(htmlDoc, bo.Message));
+                }
+
                 htmlDoc.DocumentElement.AppendChild(body);
 
                 // Save BO fie
@@ -66,6 +70,30 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
             }
 
             return elementDiv;
+        }
+
+        private XmlElement GenerateMessagePart(XmlDocument baseDocument, LinkedList<Message> messages) {
+            var messageDiv = GetDiv(baseDocument, "messagecollection");
+
+            foreach (var m in messages) {
+                var message = GetDiv(baseDocument, "message");
+                message.AppendChild(GetSimpleHTMLElement(baseDocument, "span", m.Name, "name"));
+                message.AppendChild(GetSimpleHTMLElement(baseDocument, "span", m.Text, "messagetext"));
+
+                if (m.PlaceHolderDataTypes.Count > 0) {
+                    var datatypes = GetDiv(baseDocument, "messagedatatypes");
+
+                    foreach (var dt in m.PlaceHolderDataTypes) {
+                        message.AppendChild(GetSimpleHTMLElement(baseDocument, "span", dt, "datatype"));
+                    }
+
+                    message.AppendChild(datatypes);
+                }
+
+                messageDiv.AppendChild(message);
+            }
+
+            return messageDiv;
         }
 
         private XmlElement GetDiv(XmlDocument baseDocument) {
