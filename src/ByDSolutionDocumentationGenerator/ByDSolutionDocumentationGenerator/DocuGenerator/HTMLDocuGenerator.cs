@@ -20,11 +20,11 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
         private const string htmlClassDataType = "datatype";
         private const string htmlClassName = "name";
 
-        private const string htmlClassBoElementCollection = "elementCollection";
+        private const string htmlClassBoElementCollection = "elementcollection";
         private const string htmlClassBoElement = "element";
 
         private const string htmlClassAnnotationCollection = "annotationcollection";
-        private const string htmlClassAnnntation = "annotation";
+        private const string htmlClassAnnotation = "annotation";
 
         private const string htmlClassMessageCollection = "messagecollection";
         private const string htmlClassMessage = "message";
@@ -51,6 +51,10 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
                 body.AppendChild(GetSimpleHTMLElement(htmlDoc, htmlH1, string.Format("Business Object: {0}", bo.Name)));
 
+                if (bo.Annotation.Count > 0) {
+                    body.AppendChild(GenerateAnnotationPart(htmlDoc, bo.Annotation));
+                }
+
                 if (bo.Element.Count > 0) {
                     body.AppendChild(GenerateElemementPart(htmlDoc, bo.Element));
                 }
@@ -73,6 +77,16 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
             }
         }
 
+        private XmlElement GenerateAnnotationPart(XmlDocument baseDocument, LinkedList<Annotation> annotations) {
+            var annotationDiv = GetDiv(baseDocument, htmlClassAnnotationCollection);
+
+            foreach (var a in annotations) {
+                annotationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassAnnotation));
+            }
+
+            return annotationDiv;
+        }
+
         private XmlElement GenerateElemementPart(XmlDocument baseDocument, LinkedList<Element> elements) {
             var elementDiv = GetDiv(baseDocument, htmlClassBoElementCollection);
 
@@ -82,13 +96,7 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                 element.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, e.DataType, htmlClassDataType));
 
                 if (e.Annotation.Count > 0) {
-                    var annotation = GetDiv(baseDocument, htmlClassAnnotationCollection);
-
-                    foreach (var a in e.Annotation) {
-                        annotation.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassAnnntation));
-                    }
-
-                    element.AppendChild(annotation);
+                    element.AppendChild(GenerateAnnotationPart(baseDocument, e.Annotation));
                 }
 
                 elementDiv.AppendChild(element);
