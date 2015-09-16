@@ -11,6 +11,7 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
         private const string html = "html";
         private const string htmlH1 = "h1";
+        private const string htmlH2 = "h2";
         private const string htmlBody = "body";
         private const string htmlHead = "head";
         private const string htmlTextOutputElement = "span";
@@ -104,6 +105,8 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
         private XmlElement GenerateAnnotationPart(XmlDocument baseDocument, LinkedList<Annotation> annotations) {
             var annotationDiv = GetDiv(baseDocument, htmlClassAnnotationCollection);
 
+            annotationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Annotations", htmlClassName));
+
             foreach (var a in annotations) {
                 annotationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassAnnotation));
             }
@@ -113,6 +116,8 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
         private XmlElement GenerateElemementPart(XmlDocument baseDocument, LinkedList<Element> elements) {
             var elementDiv = GetDiv(baseDocument, htmlClassBoElementCollection);
+
+            elementDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Elements", htmlClassName));
 
             foreach (var e in elements) {
                 var element = GetDiv(baseDocument, htmlClassBoElement);
@@ -131,6 +136,8 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
         private XmlElement GenerateMessagePart(XmlDocument baseDocument, LinkedList<Message> messages) {
             var messageDiv = GetDiv(baseDocument, htmlClassMessageCollection);
+
+            messageDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Messages", htmlClassName));
 
             foreach (var m in messages) {
                 var message = GetDiv(baseDocument, htmlClassMessage);
@@ -156,6 +163,8 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
         private XmlElement GenerateAssociationPart(XmlDocument baseDocument, LinkedList<Association> associations) {
             var associationDiv = GetDiv(baseDocument, htmlClassAssociationCollection);
 
+            associationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Associations", htmlClassName));
+
             foreach (var a in associations) {
                 var association = GetDiv(baseDocument, htmlClassAssociation);
 
@@ -176,6 +185,8 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
         private XmlElement GenerateActionPart(XmlDocument baseDocument, LinkedList<string> action) {
             var actionDiv = GetDiv(baseDocument, htmlClassActionCollection);
 
+            actionDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Actions", htmlClassName));
+
             foreach (var a in action) {
                 actionDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a, htmlClassName));
             }
@@ -185,6 +196,9 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
         private XmlElement GenerateNodePart(XmlDocument baseDocument, LinkedList<Node> nodes) {
             var nodeDiv = GetDiv(baseDocument, "nodecollection");
+
+            nodeDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Nodes", htmlClassName));
+
             foreach (var n in nodes) {
                 var node = GetDiv(baseDocument, "node");
 
