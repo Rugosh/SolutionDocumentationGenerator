@@ -31,6 +31,12 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
         private const string htmlClassMessageText = "messageText";
         private const string htmlClassMessageDataTypes = "messagedatatypes";
 
+        private const string htmlClassAssociationCollection = "associationcollection";
+        private const string htmlClassAssociation = "association";
+        private const string htmlClassAssociationTarget = "target";
+
+        private const string htmlClassMultiplicity = "multiplicity";
+
         private Configuration configuration;
 
         public HTMLDocuGenerator(Configuration configuration) {
@@ -61,6 +67,10 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
                 if (bo.Message.Count > 0) {
                     body.AppendChild(GenerateMessagePart(htmlDoc, bo.Message));
+                }
+
+                if (bo.Association.Count > 0) {
+                    body.AppendChild(GenerateAssociationPart(htmlDoc, bo.Association));
                 }
 
                 htmlDoc.DocumentElement.AppendChild(body);
@@ -127,6 +137,46 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
             }
 
             return messageDiv;
+        }
+
+        private XmlElement GenerateAssociationPart(XmlDocument baseDocument, LinkedList<Association> associations) {
+            var associationDiv = GetDiv(baseDocument, htmlClassAssociationCollection);
+
+            foreach (var a in associations) {
+                var association = GetDiv(baseDocument, htmlClassAssociation);
+
+                association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassName));
+                association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Target, htmlClassAssociationTarget));
+                association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(a.Multiplicity), htmlClassMultiplicity));
+
+                if (a.Annotation.Count > 0) {
+                    association.AppendChild(GenerateAnnotationPart(baseDocument, a.Annotation));
+                }
+
+                associationDiv.AppendChild(association);
+            }
+
+            return associationDiv;
+        }
+
+        private string GetMultiplicityText(Multiplicity multiplicity) {
+            var returnText = string.Empty;
+
+            if (multiplicity == Multiplicity.OneToN) {
+                returnText = "1 : n";
+
+            } else if (multiplicity == Multiplicity.OneToOne) {
+                returnText = "1 : 1";
+
+            } else if (multiplicity == Multiplicity.ZeroToN) {
+                returnText = "0 : n";
+
+            } else if (multiplicity == Multiplicity.ZeroToOne) {
+                returnText = "0 : 1";
+
+            }
+
+            return returnText;
         }
 
         private XmlElement GetDiv(XmlDocument baseDocument) {
