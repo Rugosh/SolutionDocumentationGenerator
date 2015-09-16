@@ -37,6 +37,8 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
         private const string htmlClassMultiplicity = "multiplicity";
 
+        private const string htmlClassActionCollection = "actioncollection";
+
         private Configuration configuration;
 
         public HTMLDocuGenerator(Configuration configuration) {
@@ -71,6 +73,10 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
                 if (bo.Association.Count > 0) {
                     body.AppendChild(GenerateAssociationPart(htmlDoc, bo.Association));
+                }
+
+                if (bo.Action.Count > 0) {
+                    body.AppendChild(GenerateActionPart(htmlDoc, bo.Action));
                 }
 
                 htmlDoc.DocumentElement.AppendChild(body);
@@ -157,6 +163,16 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
             }
 
             return associationDiv;
+        }
+
+        private XmlElement GenerateActionPart(XmlDocument baseDocument, LinkedList<string> action) {
+            var actionDiv = GetDiv(baseDocument, htmlClassActionCollection);
+
+            foreach (var a in action) {
+                actionDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a, htmlClassName));
+            }
+
+            return actionDiv;
         }
 
         private string GetMultiplicityText(Multiplicity multiplicity) {
