@@ -83,6 +83,9 @@ namespace ByDSolutionDocumentationGenerator.Parser {
                 } else if (parseLine.StartsWith("message")) {
                     nodeHeap.Last.Value.Message.AddLast(ParseMessage(parseLine));
 
+                } else if (parseLine.StartsWith("action")) {
+                    nodeHeap.Last.Value.Action.AddLast(ParseAction(parseLine));
+
                 } else if (parseLine.StartsWith("node")) {
                     var newNode = ParseNode(parseLine);
                     nodeHeap.Last.Value.ChildNode.AddLast(newNode);
@@ -186,6 +189,15 @@ namespace ByDSolutionDocumentationGenerator.Parser {
             message.Text = messageText.Substring(1, messageText.Length - 2);
 
             return message;
+        }
+
+        private string ParseAction(string line) {
+            var action = string.Empty;
+
+            line = line.Split(SPACER, 2, StringSplitOptions.RemoveEmptyEntries)[1];
+            action = CleanLineEnding(line);
+
+            return action;
         }
 
         private Node ParseNode(string line) {
