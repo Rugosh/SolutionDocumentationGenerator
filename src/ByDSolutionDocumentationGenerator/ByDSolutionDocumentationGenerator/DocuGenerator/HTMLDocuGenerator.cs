@@ -59,25 +59,7 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
                 body.AppendChild(GetSimpleHTMLElement(htmlDoc, htmlH1, string.Format("Business Object: {0}", bo.Name)));
 
-                if (bo.Annotation.Count > 0) {
-                    body.AppendChild(GenerateAnnotationPart(htmlDoc, bo.Annotation));
-                }
-
-                if (bo.Element.Count > 0) {
-                    body.AppendChild(GenerateElemementPart(htmlDoc, bo.Element));
-                }
-
-                if (bo.Message.Count > 0) {
-                    body.AppendChild(GenerateMessagePart(htmlDoc, bo.Message));
-                }
-
-                if (bo.Association.Count > 0) {
-                    body.AppendChild(GenerateAssociationPart(htmlDoc, bo.Association));
-                }
-
-                if (bo.Action.Count > 0) {
-                    body.AppendChild(GenerateActionPart(htmlDoc, bo.Action));
-                }
+                GenerateNodeContent(bo, htmlDoc, body);
 
                 htmlDoc.DocumentElement.AppendChild(body);
 
@@ -90,6 +72,32 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                     Console.WriteLine(string.Format("Write BO file: {0}", filename));
                 }
                 htmlDoc.Save(filename);
+            }
+        }
+
+        private void GenerateNodeContent(Node node, XmlDocument baseDocument, XmlElement parentElement) {
+            if (node.Annotation.Count > 0) {
+                parentElement.AppendChild(GenerateAnnotationPart(baseDocument, node.Annotation));
+            }
+
+            if (node.Element.Count > 0) {
+                parentElement.AppendChild(GenerateElemementPart(baseDocument, node.Element));
+            }
+
+            if (node.Message.Count > 0) {
+                parentElement.AppendChild(GenerateMessagePart(baseDocument, node.Message));
+            }
+
+            if (node.Association.Count > 0) {
+                parentElement.AppendChild(GenerateAssociationPart(baseDocument, node.Association));
+            }
+
+            if (node.Action.Count > 0) {
+                parentElement.AppendChild(GenerateActionPart(baseDocument, node.Action));
+            }
+
+            if (node.ChildNode.Count > 0) {
+                parentElement.AppendChild(GenerateNodePart(baseDocument, node.ChildNode));
             }
         }
 
@@ -173,6 +181,21 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
             }
 
             return actionDiv;
+        }
+
+        private XmlElement GenerateNodePart(XmlDocument baseDocument, LinkedList<Node> nodes) {
+            var nodeDiv = GetDiv(baseDocument, "nodecollection");
+            foreach (var n in nodes) {
+                var node = GetDiv(baseDocument, "node");
+
+                node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, n.Name, htmlClassName));
+                node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(n.Multiplicity), htmlClassName));
+                GenerateNodeContent(n, baseDocument, node);
+
+                nodeDiv.AppendChild(node);
+            }
+
+            return nodeDiv;
         }
 
         private string GetMultiplicityText(Multiplicity multiplicity) {
