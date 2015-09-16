@@ -91,6 +91,11 @@ namespace ByDSolutionDocumentationGenerator.Parser {
                     nodeHeap.Last.Value.ChildNode.AddLast(newNode);
                     nodeHeap.AddLast(newNode);
 
+                    // Close Heap at "special" Nodes
+                    if (parseLine.Trim().EndsWith(";")) {
+                        nodeHeap.RemoveLast();
+                    }
+
                 } else if (parseLine.StartsWith("}")) {
                     // Node Close
                     if (nodeHeap.Count > 1) {
@@ -212,6 +217,9 @@ namespace ByDSolutionDocumentationGenerator.Parser {
                 line = splittedLine.Last().Replace("[", "").Replace("]", "");
                 splittedLine = line.Split(new string[1] { "," }, 2, StringSplitOptions.RemoveEmptyEntries);
                 node.Multiplicity = GetMultiplicity(splittedLine.First(), splittedLine.Last());
+            } else {
+                node.Name = line;
+                node.Multiplicity = Multiplicity.ZeroToOne;
             }
 
             return node;

@@ -315,5 +315,39 @@ businessobject TestBO {
             Assert.AreEqual(1, parsedBo.ChildNode.First.Value.ChildNode.Count);
             Assert.AreEqual(1, parsedBo.ChildNode.First.Value.ChildNode.First.Value.ChildNode.Count);
         }
+
+        [TestMethod]
+        public void SimpleBusinessObjectWithSpecialNodesTest() {
+            var boText = @"import AP.Common.GDT as apCommonGDT;
+
+businessobject TestBO {
+
+		element TestBO_ID :ID;
+
+	    [DependentObject(TextCollection)]
+	    [MultipleTexts]
+	    node TextCollection;
+
+	    [DependentObject(AttachmentFolder)]
+	    node AttachementFolder;
+}";
+
+            var parser = new BusinessObjectParser(TestConfiguration);
+            var parsedBo = parser.ParseBusinessObject(boText);
+
+            // Check BO Root Node
+            Assert.AreEqual("TestBO", parsedBo.Name);
+            Assert.AreEqual(NodeType.BusinessObject, parsedBo.NodeType);
+
+            // Check Element
+            Assert.AreEqual(1, parsedBo.Element.Count);
+            var e = parsedBo.Element.First.Value;
+            Assert.AreEqual("TestBO_ID", e.Name);
+            Assert.AreEqual("ID", e.DataType);
+            Assert.AreEqual(0, e.Annotation.Count);
+
+            // Check ChildNodes
+            Assert.AreEqual(2, parsedBo.ChildNode.Count);
+        }
     }
 }
