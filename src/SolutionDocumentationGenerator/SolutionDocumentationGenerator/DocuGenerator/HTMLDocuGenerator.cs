@@ -115,7 +115,11 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
 
             // Copy default stylesheets
             var cssPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style", "style.css");
-            System.IO.File.Copy(cssPath, System.IO.Path.Combine(configuration.OutputDir, "style.css"));
+            var cssTargetPath = System.IO.Path.Combine(configuration.OutputDir, "style.css");
+            if (System.IO.File.Exists(cssTargetPath)) {
+                System.IO.File.Delete(cssTargetPath);
+            }
+            System.IO.File.Copy(cssPath, cssTargetPath);
         }
 
         private void GenerateNodeContent(Node node, XmlDocument baseDocument, XmlElement parentElement) {
