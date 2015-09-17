@@ -41,7 +41,8 @@ namespace ByDSolutionDocumentationGenerator {
             }
 
             if (configuration.OutputDir == string.Empty) {
-                // TODO: set default
+                // Default output dir := current dir
+                configuration.OutputDir = System.IO.Directory.GetCurrentDirectory();
 
             } else {
                 if (System.IO.Directory.Exists(configuration.OutputDir) == false) {

@@ -112,6 +112,10 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                 Console.WriteLine(string.Format("Write Solution file: {0}", indexFilename));
             }
             indexDoc.Save(indexFilename);
+
+            // Copy default stylesheets
+            var cssPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style", "style.css");
+            System.IO.File.Copy(cssPath, System.IO.Path.Combine(configuration.OutputDir, "style.css"));
         }
 
         private void GenerateNodeContent(Node node, XmlDocument baseDocument, XmlElement parentElement) {
