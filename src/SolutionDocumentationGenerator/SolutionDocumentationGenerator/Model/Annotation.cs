@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ByDSolutionDocumentationGenerator.Model {
+namespace SolutionDocumentationGenerator.Model {
     public class Annotation {
 
         public string Name;

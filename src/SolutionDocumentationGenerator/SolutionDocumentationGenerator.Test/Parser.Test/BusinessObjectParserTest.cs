@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ByDSolutionDocumentationGenerator.Model;
-using ByDSolutionDocumentationGenerator.Parser;
+using SolutionDocumentationGenerator.Model;
+using SolutionDocumentationGenerator.Parser;
 
-namespace ByDSolutionDocumentationGenerator.Test.Parser.Test {
+namespace SolutionDocumentationGenerator.Test.Parser.Test {
     [TestClass]
     public class BusinessObjectParserTest {
 

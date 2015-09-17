@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ByDSolutionDocumentationGenerator {
+namespace SolutionDocumentationGenerator {
     public class Configuration {
 
         public Configuration() {

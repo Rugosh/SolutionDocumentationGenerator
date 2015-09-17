@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ByDSolutionDocumentationGenerator.Parser;
+using SolutionDocumentationGenerator.Parser;
 
-namespace ByDSolutionDocumentationGenerator.Test.Parser.Test {
+namespace SolutionDocumentationGenerator.Test.Parser.Test {
     [TestClass]
     public class SolutionFileParserTest {
         private Configuration TestConfiguration;

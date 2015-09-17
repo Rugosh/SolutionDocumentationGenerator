@@ -1,12 +1,12 @@
-﻿using ByDSolutionDocumentationGenerator.DocuGenerator;
-using ByDSolutionDocumentationGenerator.Parser;
+﻿using SolutionDocumentationGenerator.DocuGenerator;
+using SolutionDocumentationGenerator.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ByDSolutionDocumentationGenerator {
+namespace SolutionDocumentationGenerator {
     public class Program {
         public static void Main(string[] args) {
             var configuration = new Configuration();
@@ -73,8 +73,8 @@ namespace ByDSolutionDocumentationGenerator {
             Console.WriteLine("-h|--help");
             Console.WriteLine("\tShow this help");
             Console.WriteLine("Usage Example");
-            var examplePath = @"C:\Users\tok\Documents\CopernicusIsolatedShell\Projects\BYD_DEV\YEKRNL1PY";
-            Console.WriteLine(string.Format("\tByDSolutionDocumentationGenerator.exe -v {0}", examplePath));
+            var examplePath = @"C:\Users\tok\Documents\CopernicusIsolatedShell\Projects\_DEV\YEKRNL1PY";
+            Console.WriteLine(string.Format("\tSolutionDocumentationGenerator.exe -v {0}", examplePath));
         }
     }
 }

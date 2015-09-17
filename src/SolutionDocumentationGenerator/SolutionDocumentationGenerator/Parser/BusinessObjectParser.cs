@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ByDSolutionDocumentationGenerator.Model;
+using SolutionDocumentationGenerator.Model;
 
-namespace ByDSolutionDocumentationGenerator.Parser {
+namespace SolutionDocumentationGenerator.Parser {
     public class BusinessObjectParser {
 
         private char[] SPACER;

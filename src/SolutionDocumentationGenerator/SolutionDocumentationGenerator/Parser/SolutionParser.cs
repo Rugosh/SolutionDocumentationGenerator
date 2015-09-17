@@ -1,4 +1,4 @@
-﻿using ByDSolutionDocumentationGenerator.Model;
+﻿using SolutionDocumentationGenerator.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ByDSolutionDocumentationGenerator.Parser {
+namespace SolutionDocumentationGenerator.Parser {
     public class SolutionParser {
 
         private Configuration configuration;

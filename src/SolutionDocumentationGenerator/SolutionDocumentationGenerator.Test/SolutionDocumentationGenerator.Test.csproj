@@ -6,8 +6,8 @@
     <ProjectGuid>{56C34F36-F3D8-4D21-9399-5C42E2564D30}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ByDSolutionDocumentationGenerator.Test</RootNamespace>
-    <AssemblyName>ByDSolutionDocumentationGenerator.Test</AssemblyName>
+    <RootNamespace>SolutionDocumentationGenerator.Test</RootNamespace>
+    <AssemblyName>SolutionDocumentationGenerator.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -58,9 +58,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ByDSolutionDocumentationGenerator\ByDSolutionDocumentationGenerator.csproj">
+    <ProjectReference Include="..\SolutionDocumentationGenerator\SolutionDocumentationGenerator.csproj">
       <Project>{7ed0fa1a-11fb-4134-bda3-99b2dd693e31}</Project>
-      <Name>ByDSolutionDocumentationGenerator</Name>
+      <Name>SolutionDocumentationGenerator</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

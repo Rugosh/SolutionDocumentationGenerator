@@ -1,4 +1,4 @@
-﻿using ByDSolutionDocumentationGenerator.Model;
+﻿using SolutionDocumentationGenerator.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace ByDSolutionDocumentationGenerator.DocuGenerator {
+namespace SolutionDocumentationGenerator.DocuGenerator {
     public class HTMLDocuGenerator {
 
         private const string html = "html";
