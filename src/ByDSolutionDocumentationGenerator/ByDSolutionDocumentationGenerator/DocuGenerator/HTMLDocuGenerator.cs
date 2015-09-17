@@ -148,7 +148,7 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                     var datatypes = GetDiv(baseDocument, htmlClassMessageDataTypes);
 
                     foreach (var dt in m.PlaceHolderDataTypes) {
-                        message.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, dt, htmlClassDataType));
+                        datatypes.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, dt, htmlClassDataType));
                     }
 
                     message.AppendChild(datatypes);
@@ -203,7 +203,7 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                 var node = GetDiv(baseDocument, "node");
 
                 node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, n.Name, htmlClassName));
-                node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(n.Multiplicity), htmlClassName));
+                node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(n.Multiplicity), htmlClassMultiplicity));
                 GenerateNodeContent(n, baseDocument, node);
 
                 nodeDiv.AppendChild(node);
@@ -282,6 +282,18 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
             charset.Value = "utf-8";
             metadata.Attributes.Append(charset);
             head.AppendChild(metadata);
+
+            var css = htmlDoc.CreateElement("link");
+            var href = htmlDoc.CreateAttribute("href");
+            href.Value = "./style.css";
+            css.Attributes.Append(href);
+            var type = htmlDoc.CreateAttribute("type");
+            type.Value = "text/css";
+            css.Attributes.Append(type);
+            var rel = htmlDoc.CreateAttribute("rel");
+            rel.Value = "stylesheet";
+            css.Attributes.Append(rel);
+            head.AppendChild(css);
 
             var titleElement = htmlDoc.CreateElement("title");
             titleElement.AppendChild(htmlDoc.CreateTextNode(title));
