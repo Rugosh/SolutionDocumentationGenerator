@@ -51,6 +51,7 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                 Console.WriteLine("Generate HTML Documentation");
             }
 
+            var businessObjects = new Dictionary<string, string>();
             // Generate BO files
             foreach (var bo in solution.BusinessObjects) {
                 var boContenten = new StringBuilder();
@@ -64,8 +65,9 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
 
                 htmlDoc.DocumentElement.AppendChild(body);
 
-                // Save BO fie
+                // Save BO file
                 var filename = System.IO.Path.Combine(configuration.OutputDir, string.Format("bo_{0}.html", bo.Name));
+                businessObjects.Add(bo.Name, filename);
                 if (System.IO.File.Exists(filename)) {
                     System.IO.File.Delete(filename);
                 }
@@ -74,6 +76,42 @@ namespace ByDSolutionDocumentationGenerator.DocuGenerator {
                 }
                 htmlDoc.Save(filename);
             }
+
+            var indexDoc = GetBaseHtmlDocument(string.Format("Solution: {0}", solution.Name));
+            var indexBody = indexDoc.CreateElement(htmlBody);
+
+            indexBody.AppendChild(GetSimpleHTMLElement(indexDoc, htmlH1, string.Format("Solution {0}", solution.Name)));
+
+            // Insert BO information
+            if (businessObjects.Keys.Count > 0) {
+                var boDiv = GetDiv(indexDoc, "businessobjectcollection");
+                indexBody.AppendChild(GetSimpleHTMLElement(indexDoc, htmlH2, "Business Objects"));
+
+                foreach (var bo in businessObjects.Keys.OrderBy(b => b)) {
+                    var boElement = GetSimpleHTMLElement(indexDoc, "a", bo, "businessobject");
+                    var href = indexDoc.CreateAttribute("href");
+                    string hrefValue;
+                    if (businessObjects.TryGetValue(bo, out hrefValue) == false) {
+                        continue;
+                    }
+                    href.Value = string.Format(@"file:///{0}", hrefValue);
+                    boElement.Attributes.Append(href);
+
+                    boDiv.AppendChild(boElement);
+                }
+
+                indexBody.AppendChild(boDiv);
+            }
+
+            indexDoc.DocumentElement.AppendChild(indexBody);
+            var indexFilename = System.IO.Path.Combine(configuration.OutputDir, "index.html");
+            if (System.IO.File.Exists(indexFilename)) {
+                System.IO.File.Delete(indexFilename);
+            }
+            if (configuration.Verbose) {
+                Console.WriteLine(string.Format("Write Solution file: {0}", indexFilename));
+            }
+            indexDoc.Save(indexFilename);
         }
 
         private void GenerateNodeContent(Node node, XmlDocument baseDocument, XmlElement parentElement) {
