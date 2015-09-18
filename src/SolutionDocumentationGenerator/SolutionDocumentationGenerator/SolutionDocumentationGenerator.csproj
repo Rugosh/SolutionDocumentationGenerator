@@ -43,8 +43,10 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="DocuGenerator\HTMLDocuGenerator.cs" />
+    <Compile Include="Model\Action.cs" />
     <Compile Include="Model\Annotation.cs" />
     <Compile Include="Model\Association.cs" />
+    <Compile Include="Model\DocumentableElement.cs" />
     <Compile Include="Model\Element.cs" />
     <Compile Include="Model\Message.cs" />
     <Compile Include="Model\Multiplicity.cs" />

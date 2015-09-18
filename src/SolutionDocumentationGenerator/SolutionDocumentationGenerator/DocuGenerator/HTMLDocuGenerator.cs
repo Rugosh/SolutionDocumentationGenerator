@@ -15,11 +15,13 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
         private const string htmlBody = "body";
         private const string htmlHead = "head";
         private const string htmlTextOutputElement = "span";
+        private const string htmlDocumentationOutputElement = "p";
         private const string htmlDiv = "div";
 
         private const string htmlClass = "class";
         private const string htmlClassDataType = "datatype";
         private const string htmlClassName = "name";
+        private const string htmlClassDocumentation = "documentation";
 
         private const string htmlClassBoElementCollection = "elementcollection";
         private const string htmlClassBoElement = "element";
@@ -39,6 +41,7 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
         private const string htmlClassMultiplicity = "multiplicity";
 
         private const string htmlClassActionCollection = "actioncollection";
+        private const string htmlClassAction = "action";
 
         private Configuration configuration;
 
@@ -122,7 +125,21 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
             System.IO.File.Copy(cssPath, cssTargetPath);
         }
 
+        private XmlElement GenerateDocumentationPart(XmlDocument baseDocument, LinkedList<string> documentationLines) {
+            var documentationDiv = GetDiv(baseDocument, htmlClassDocumentation);
+
+            foreach (var d in documentationLines) {
+                documentationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlDocumentationOutputElement, d));
+            }
+
+            return documentationDiv;
+        }
+
         private void GenerateNodeContent(Node node, XmlDocument baseDocument, XmlElement parentElement) {
+            if (node.DocumentationLines.Count > 0) {
+                parentElement.AppendChild(GenerateDocumentationPart(baseDocument, node.DocumentationLines));
+            }
+
             if (node.Annotation.Count > 0) {
                 parentElement.AppendChild(GenerateAnnotationPart(baseDocument, node.Annotation));
             }
@@ -169,6 +186,9 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
                 var element = GetDiv(baseDocument, htmlClassBoElement);
                 element.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, e.Name, htmlClassName));
                 element.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, e.DataType, htmlClassDataType));
+                if (e.DocumentationLines.Count > 0) {
+                    element.AppendChild(GenerateDocumentationPart(baseDocument, e.DocumentationLines));
+                }
 
                 if (e.Annotation.Count > 0) {
                     element.AppendChild(GenerateAnnotationPart(baseDocument, e.Annotation));
@@ -200,6 +220,10 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
                     message.AppendChild(datatypes);
                 }
 
+                if (m.DocumentationLines.Count > 0) {
+                    message.AppendChild(GenerateDocumentationPart(baseDocument, m.DocumentationLines));
+                }
+
                 messageDiv.AppendChild(message);
             }
 
@@ -217,6 +241,9 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
                 association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassName));
                 association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Target, htmlClassAssociationTarget));
                 association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(a.Multiplicity), htmlClassMultiplicity));
+                if (a.DocumentationLines.Count > 0) {
+                    association.AppendChild(GenerateDocumentationPart(baseDocument, a.DocumentationLines));
+                }
 
                 if (a.Annotation.Count > 0) {
                     association.AppendChild(GenerateAnnotationPart(baseDocument, a.Annotation));
@@ -228,13 +255,19 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
             return associationDiv;
         }
 
-        private XmlElement GenerateActionPart(XmlDocument baseDocument, LinkedList<string> action) {
+        private XmlElement GenerateActionPart(XmlDocument baseDocument, LinkedList<SolutionDocumentationGenerator.Model.Action> action) {
             var actionDiv = GetDiv(baseDocument, htmlClassActionCollection);
 
             actionDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Actions", htmlClassName));
 
             foreach (var a in action) {
-                actionDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a, htmlClassName));
+                var actionElement = GetDiv(baseDocument, htmlClassAction);
+                actionElement.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassName));
+                if (a.DocumentationLines.Count > 0) {
+                    actionElement.AppendChild(GenerateDocumentationPart(baseDocument, a.DocumentationLines));
+                }
+
+                actionDiv.AppendChild(actionElement);
             }
 
             return actionDiv;
@@ -250,6 +283,11 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
 
                 node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, n.Name, htmlClassName));
                 node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(n.Multiplicity), htmlClassMultiplicity));
+
+                if (n.DocumentationLines.Count > 0) {
+                    node.AppendChild(GenerateDocumentationPart(baseDocument, n.DocumentationLines));
+                }
+
                 GenerateNodeContent(n, baseDocument, node);
 
                 nodeDiv.AppendChild(node);

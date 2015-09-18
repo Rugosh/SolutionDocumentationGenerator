@@ -22,15 +22,30 @@ namespace SolutionDocumentationGenerator.Parser {
                 Console.WriteLine(boText);
             }
 
-            boText = boText.Replace("\n", "");
-            boText = boText.Replace("\r", "");
+            var newBoText = new StringBuilder();
+            foreach (var l in boText.Split('\n')) {
+                if (l.Contains("///") == false) {
+                    var line = l.Replace("\n", "").Replace("\r", "");
+                    newBoText.Append(line);
+                } else {
+                    newBoText.Append(l + "\n");
+                }
+            }
+            boText = newBoText.ToString();
+
+            //boText = boText.Replace("\n", "");
+            //boText = boText.Replace("\r", "");
             boText = boText.Replace("{", "{\n");
             boText = boText.Replace("}", "}\n");
             boText = boText.Replace(";", ";\n");
+            boText = boText.Replace("///", "\n///");
 
-            var newBoText = new StringBuilder();
-            foreach (var line in boText.Split('\n')) {
-                newBoText.AppendLine(line.Trim());
+            newBoText = new StringBuilder();
+            foreach (var l in boText.Split('\n')) {
+                var line = l.Trim();
+                if (line.Length > 0) {
+                    newBoText.AppendLine(line);
+                }
             }
 
             if (configuration.Verbose) {
@@ -53,6 +68,7 @@ namespace SolutionDocumentationGenerator.Parser {
             boNode.NodeType = NodeType.BusinessObject;
             nodeHeap.AddLast(boNode);
 
+            var currentDocuLines = new LinkedList<string>();
             var currenctAnnotations = new LinkedList<Annotation>();
             foreach (var line in boText.Split('\n')) {
                 var parseLine = line.Trim();
@@ -73,23 +89,32 @@ namespace SolutionDocumentationGenerator.Parser {
                 if (parseLine.StartsWith("businessobject")) {
                     nodeHeap.Last.Value.Name = CleanLineEnding(parseLine.Split(SPACER)[1]);
                     nodeHeap.Last.Value.Annotation = currenctAnnotations;
+                    nodeHeap.Last.Value.DocumentationLines = currentDocuLines;
 
                 } else if (parseLine.StartsWith("element")) {
                     nodeHeap.Last.Value.Element.AddLast(ParseElement(parseLine, currenctAnnotations));
+                    nodeHeap.Last.Value.Element.Last.Value.DocumentationLines = currentDocuLines;
 
                 } else if (parseLine.StartsWith("association")) {
                     nodeHeap.Last.Value.Association.AddLast(ParseAssociation(parseLine, currenctAnnotations));
+                    nodeHeap.Last.Value.Association.Last.Value.DocumentationLines = currentDocuLines;
 
                 } else if (parseLine.StartsWith("message")) {
                     nodeHeap.Last.Value.Message.AddLast(ParseMessage(parseLine));
+                    nodeHeap.Last.Value.Message.Last.Value.DocumentationLines = currentDocuLines;
 
                 } else if (parseLine.StartsWith("action")) {
                     nodeHeap.Last.Value.Action.AddLast(ParseAction(parseLine));
+                    nodeHeap.Last.Value.Action.Last.Value.DocumentationLines = currentDocuLines;
+
+                } else if (parseLine.StartsWith("///")) {
+                    currentDocuLines.AddLast(parseLine.TrimStart('/'));
 
                 } else if (parseLine.StartsWith("node")) {
                     var newNode = ParseNode(parseLine);
                     nodeHeap.Last.Value.ChildNode.AddLast(newNode);
                     nodeHeap.AddLast(newNode);
+                    nodeHeap.Last.Value.DocumentationLines = currentDocuLines;
 
                     // Close Heap at "special" Nodes
                     if (parseLine.Trim().EndsWith(";")) {
@@ -106,6 +131,10 @@ namespace SolutionDocumentationGenerator.Parser {
 
                 if (currenctAnnotations.Count != 0) {
                     currenctAnnotations = new LinkedList<Annotation>();
+                }
+
+                if (parseLine.StartsWith("///") == false && currentDocuLines.Count != 0) {
+                    currentDocuLines = new LinkedList<string>();
                 }
             }
 
@@ -196,11 +225,11 @@ namespace SolutionDocumentationGenerator.Parser {
             return message;
         }
 
-        private string ParseAction(string line) {
-            var action = string.Empty;
+        private SolutionDocumentationGenerator.Model.Action ParseAction(string line) {
+            var action = new SolutionDocumentationGenerator.Model.Action();
 
             line = line.Split(SPACER, 2, StringSplitOptions.RemoveEmptyEntries)[1];
-            action = CleanLineEnding(line);
+            action.Name = CleanLineEnding(line);
 
             return action;
         }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SolutionDocumentationGenerator.Model {
-    public class Association {
+    public class Association : DocumentableElement {
         public string Name;
 
         public Multiplicity Multiplicity;
@@ -14,14 +14,16 @@ namespace SolutionDocumentationGenerator.Model {
 
         public LinkedList<Annotation> Annotation;
 
-        public Association() {
+        public Association()
+            : base() {
             this.Name = string.Empty;
             this.Target = string.Empty;
             Multiplicity = Multiplicity.ZeroToOne;
             this.Annotation = new LinkedList<Annotation>();
         }
 
-        public Association(string name, Multiplicity multiplicity, string target) {
+        public Association(string name, Multiplicity multiplicity, string target)
+            : base() {
             Name = name;
             Multiplicity = multiplicity;
             Target = target;

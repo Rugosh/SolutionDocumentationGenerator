@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SolutionDocumentationGenerator.Model {
-    public class Node {
+    public class Node : DocumentableElement {
 
         public NodeType NodeType;
 
@@ -21,17 +21,18 @@ namespace SolutionDocumentationGenerator.Model {
 
         public LinkedList<Message> Message;
 
-        public LinkedList<string> Action;
+        public LinkedList<Action> Action;
 
         public LinkedList<Association> Association;
 
-        public Node() {
+        public Node()
+            : base() {
             this.NodeType = NodeType.Node;
             this.Annotation = new LinkedList<Annotation>();
             this.Element = new LinkedList<Element>();
             this.ChildNode = new LinkedList<Node>();
             this.Message = new LinkedList<Message>();
-            this.Action = new LinkedList<string>();
+            this.Action = new LinkedList<Action>();
             this.Association = new LinkedList<Association>();
         }
 
@@ -66,6 +67,6 @@ namespace SolutionDocumentationGenerator.Model {
 
             return retString.ToString();
         }
-    
+
     }
 }

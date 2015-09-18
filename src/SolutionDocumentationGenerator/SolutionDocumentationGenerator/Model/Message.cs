@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SolutionDocumentationGenerator.Model {
-    public class Message {
+    public class Message : DocumentableElement {
 
         public string Name;
 
@@ -13,7 +13,8 @@ namespace SolutionDocumentationGenerator.Model {
 
         public LinkedList<string> PlaceHolderDataTypes;
 
-        public Message() {
+        public Message()
+            : base() {
             this.Name = string.Empty;
             this.Text = string.Empty;
             this.PlaceHolderDataTypes = new LinkedList<string>();

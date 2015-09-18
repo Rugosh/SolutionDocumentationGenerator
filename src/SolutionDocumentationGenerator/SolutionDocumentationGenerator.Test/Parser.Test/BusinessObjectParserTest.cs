@@ -349,5 +349,51 @@ businessobject TestBO {
             // Check ChildNodes
             Assert.AreEqual(2, parsedBo.ChildNode.Count);
         }
+
+        [TestMethod]
+        public void BusinessObjectWithDocumentationTest() {
+            var boText = @"import AP.Common.GDT as apCommonGDT;
+
+/// Some BO Docu Text
+businessobject TestBO {
+        
+        /// Some TestBO_ID Element Docu Test
+		element TestBO_ID :ID;
+
+        /// Docu Line 1 for SomeNode
+        /// Docu Line 2 for SomeNode
+	    node SomeNode [0,n]{
+
+            /// Docu Line 1 for element1
+            /// Docu Line 2 for element1
+            /// Docu Line 3 for element1
+		    [Label (""element1"")]
+		    element element1 :ID;
+	    }
+
+
+}";
+
+            var parser = new BusinessObjectParser(TestConfiguration);
+            var parsedBo = parser.ParseBusinessObject(boText);
+
+            // Check BO Root Node
+            Assert.AreEqual("TestBO", parsedBo.Name);
+            Assert.AreEqual(NodeType.BusinessObject, parsedBo.NodeType);
+            Assert.AreEqual(1, parsedBo.DocumentationLines.Count);
+
+            // Check Element
+            Assert.AreEqual(1, parsedBo.Element.Count);
+            var e = parsedBo.Element.First.Value;
+            Assert.AreEqual("TestBO_ID", e.Name);
+            Assert.AreEqual("ID", e.DataType);
+            Assert.AreEqual(0, e.Annotation.Count);
+            Assert.AreEqual(1, e.DocumentationLines.Count);
+
+            // Check ChildNode
+            Assert.AreEqual(1, parsedBo.ChildNode.Count);
+            Assert.AreEqual(2, parsedBo.ChildNode.First.Value.DocumentationLines.Count);
+            Assert.AreEqual(3, parsedBo.ChildNode.First.Value.Element.First.Value.DocumentationLines.Count);
+        }
     }
 }

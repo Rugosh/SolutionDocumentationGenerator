@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SolutionDocumentationGenerator.Model {
-    public class Element {
+    public class Element : DocumentableElement {
 
         public string Name;
 
@@ -13,7 +13,8 @@ namespace SolutionDocumentationGenerator.Model {
 
         public LinkedList<Annotation> Annotation;
 
-        public Element() {
+        public Element()
+            : base() {
             this.Name = string.Empty;
             this.DataType = string.Empty;
             this.Annotation = new LinkedList<Annotation>();

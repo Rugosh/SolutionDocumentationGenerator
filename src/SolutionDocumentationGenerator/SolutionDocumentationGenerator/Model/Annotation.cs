@@ -9,11 +9,13 @@ namespace SolutionDocumentationGenerator.Model {
 
         public string Name;
 
-        public Annotation() {
+        public Annotation()
+            : base() {
             this.Name = string.Empty;
         }
 
-        public Annotation(string Name) {
+        public Annotation(string Name)
+            : base() {
             this.Name = Name;
         }
 
