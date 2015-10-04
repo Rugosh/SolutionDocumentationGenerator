@@ -169,7 +169,14 @@ namespace SolutionDocumentationGenerator.Parser {
 
             // handle Associaton
             var splittedLine = line.Split(new string[1] { " to " }, StringSplitOptions.RemoveEmptyEntries);
-            newAssociation.Target = CleanLineEnding(splittedLine.Last());
+            var toPart = CleanLineEnding(splittedLine.Last());
+            if (toPart.Contains(" valuation ")) {
+                var splittedToPart = toPart.Split(new string[1] { " valuation " }, StringSplitOptions.RemoveEmptyEntries);
+                newAssociation.Target = splittedToPart.First();
+                newAssociation.Valuation = splittedToPart.Last().Replace("(", "").Replace(")", "");
+            } else {
+                newAssociation.Target = toPart;
+            }
 
             if (splittedLine.First().Contains('[')) {
                 splittedLine = splittedLine.First().Split(new char[1] { '[' }, StringSplitOptions.RemoveEmptyEntries);
