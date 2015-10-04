@@ -37,6 +37,7 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
         private const string htmlClassAssociationCollection = "associationcollection";
         private const string htmlClassAssociation = "association";
         private const string htmlClassAssociationTarget = "target";
+        private const string htmlClassAssociationValuation = "valuation";
 
         private const string htmlClassMultiplicity = "multiplicity";
 
@@ -241,6 +242,9 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
                 association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassName));
                 association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Target, htmlClassAssociationTarget));
                 association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(a.Multiplicity), htmlClassMultiplicity));
+                if (a.ContainsValuation) {
+                    association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Valuation, htmlClassAssociationValuation));
+                }
                 if (a.DocumentationLines.Count > 0) {
                     association.AppendChild(GenerateDocumentationPart(baseDocument, a.DocumentationLines));
                 }
