@@ -1,48 +1,42 @@
 ﻿using SolutionDocumentationGenerator.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace SolutionDocumentationGenerator.DocuGenerator {
     public class HTMLDocuGenerator {
 
-        private const string html = "html";
-        private const string htmlH1 = "h1";
-        private const string htmlH2 = "h2";
-        private const string htmlBody = "body";
-        private const string htmlHead = "head";
-        private const string htmlTextOutputElement = "span";
-        private const string htmlDocumentationOutputElement = "p";
-        private const string htmlDiv = "div";
+        private const string contentPlaceHolder = "###CONTENT###";
+        private const string titlePlaceHolder = "###TITLE###";
+        private const string pathPlaceHolder = "###PATH###";
+        private const string targetPlaceHolder = "###TARGET###";
+        private const string dataTypePlaceHolder = "###DATATYPE###";
+        private const string textPlaceHolder = "###TEXT###";
+        private const string multiplicityPlaceHolder = "###MULTIPLICITY###";
 
-        private const string htmlClass = "class";
-        private const string htmlClassDataType = "datatype";
-        private const string htmlClassName = "name";
-        private const string htmlClassDocumentation = "documentation";
+        private const string baseDocumentSnippet = "BaseDocument";
+        private const string boCollectionSnippet = "BusinessObjectCollection";
+        private const string boCollectionItemSnippet = "BusinessObjectCollectionItem";
 
-        private const string htmlClassBoElementCollection = "elementcollection";
-        private const string htmlClassBoElement = "element";
-
-        private const string htmlClassAnnotationCollection = "annotationcollection";
-        private const string htmlClassAnnotation = "annotation";
-
-        private const string htmlClassMessageCollection = "messagecollection";
-        private const string htmlClassMessage = "message";
-        private const string htmlClassMessageText = "messageText";
-        private const string htmlClassMessageDataTypes = "messagedatatypes";
-
-        private const string htmlClassAssociationCollection = "associationcollection";
-        private const string htmlClassAssociation = "association";
-        private const string htmlClassAssociationTarget = "target";
-        private const string htmlClassAssociationValuation = "valuation";
-
-        private const string htmlClassMultiplicity = "multiplicity";
-
-        private const string htmlClassActionCollection = "actioncollection";
-        private const string htmlClassAction = "action";
+        private const string actionCollectionSnippet = "ActionCollection";
+        private const string actionCollectionItemSnippet = "ActionCollectionItem";
+        private const string annotationCollectionSnippet = "AnnotationCollection";
+        private const string annotationCollectionItemSnippet = "AnnotationCollectionItem";
+        private const string associationCollectionSnippet = "AssociationCollection";
+        private const string associationCollectionItemSnippet = "AssociationCollectionItem";
+        private const string dataTypeCollectionSnippet = "DataTypeCollection";
+        private const string dataTypeCollectionItemSnippet = "DataTypeCollectionItem";
+        private const string documentationCollectionSnippet = "DocumentationCollection";
+        private const string documentationCollectionItemSnippet = "DocumentationCollectionItem";
+        private const string elementCollectionSnippet = "ElementCollection";
+        private const string elementCollectionItemSnippet = "ElementCollectionItem";
+        private const string messageCollectionSnippet = "MessageCollection";
+        private const string messageCollectionItemSnippet = "MessageCollectionItem";
+        private const string nodeCollectionSnippet = "NodeCollection";
+        private const string nodeCollectionItemSnippet = "NodeCollectionItem";
+        private const string valuationSnippet = "Valuation";
 
         private Configuration configuration;
 
@@ -58,16 +52,9 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
             var businessObjects = new Dictionary<string, string>();
             // Generate BO files
             foreach (var bo in solution.BusinessObjects) {
-                var boContenten = new StringBuilder();
+                var htmlDoc = GetBaseHtmlDocument(string.Format("Business Object: {0}", bo.Name));
 
-                var htmlDoc = GetBaseHtmlDocument(string.Format("BO: {0}", bo.Name));
-                var body = htmlDoc.CreateElement(htmlBody);
-
-                body.AppendChild(GetSimpleHTMLElement(htmlDoc, htmlH1, string.Format("Business Object: {0}", bo.Name)));
-
-                GenerateNodeContent(bo, htmlDoc, body);
-
-                htmlDoc.DocumentElement.AppendChild(body);
+                htmlDoc.Replace(contentPlaceHolder, GenerateNodeContent(bo).ToString());
 
                 // Save BO file
                 var filename = System.IO.Path.Combine(configuration.OutputDir, string.Format("bo_{0}.html", bo.Name));
@@ -78,226 +65,215 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
                 if (configuration.Verbose) {
                     Console.WriteLine(string.Format("Write BO file: {0}", filename));
                 }
-                htmlDoc.Save(filename);
+
+                WriteFile(filename, htmlDoc);
             }
 
             var indexDoc = GetBaseHtmlDocument(string.Format("Solution: {0}", solution.Name));
-            var indexBody = indexDoc.CreateElement(htmlBody);
 
-            indexBody.AppendChild(GetSimpleHTMLElement(indexDoc, htmlH1, string.Format("Solution {0}", solution.Name)));
-
+            var indexDocContent = new StringBuilder();
             // Insert BO information
             if (businessObjects.Keys.Count > 0) {
-                var boDiv = GetDiv(indexDoc, "businessobjectcollection");
-                indexBody.AppendChild(GetSimpleHTMLElement(indexDoc, htmlH2, "Business Objects"));
+                var boCollection = GetHTMLSnippet(boCollectionSnippet);
 
+                var boCollectionContent = new StringBuilder();
                 foreach (var bo in businessObjects.Keys.OrderBy(b => b)) {
-                    var boElement = GetSimpleHTMLElement(indexDoc, "a", bo, "businessobject");
-                    var href = indexDoc.CreateAttribute("href");
                     string hrefValue;
                     if (businessObjects.TryGetValue(bo, out hrefValue) == false) {
                         continue;
                     }
-                    href.Value = string.Format(@"file:///{0}", hrefValue);
-                    boElement.Attributes.Append(href);
 
-                    boDiv.AppendChild(boElement);
+                    var boElement = GetHTMLSnippet(boCollectionItemSnippet);
+                    boElement = boElement.Replace(titlePlaceHolder, bo);
+                    boElement = boElement.Replace(pathPlaceHolder, hrefValue);
+
+                    boCollectionContent.Append(boElement);
                 }
 
-                indexBody.AppendChild(boDiv);
+                indexDocContent.Append(boCollection.Replace(contentPlaceHolder, boCollectionContent.ToString()).ToString());
             }
 
-            indexDoc.DocumentElement.AppendChild(indexBody);
+            indexDoc.Replace(contentPlaceHolder, indexDocContent.ToString());
+
             var indexFilename = System.IO.Path.Combine(configuration.OutputDir, "index.html");
-            if (System.IO.File.Exists(indexFilename)) {
-                System.IO.File.Delete(indexFilename);
-            }
             if (configuration.Verbose) {
                 Console.WriteLine(string.Format("Write Solution file: {0}", indexFilename));
             }
-            indexDoc.Save(indexFilename);
+            WriteFile(indexFilename, indexDoc);
 
             // Copy default stylesheets
-            var cssPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style", "style.css");
-            var cssTargetPath = System.IO.Path.Combine(configuration.OutputDir, "style.css");
-            if (System.IO.File.Exists(cssTargetPath)) {
-                System.IO.File.Delete(cssTargetPath);
-            }
-            System.IO.File.Copy(cssPath, cssTargetPath);
+            CopyStyleFiles();
         }
 
-        private XmlElement GenerateDocumentationPart(XmlDocument baseDocument, LinkedList<string> documentationLines) {
-            var documentationDiv = GetDiv(baseDocument, htmlClassDocumentation);
+        private StringBuilder GenerateNodeContent(Node node) {
+            var nodeContent = new StringBuilder();
 
-            foreach (var d in documentationLines) {
-                documentationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlDocumentationOutputElement, d));
-            }
-
-            return documentationDiv;
-        }
-
-        private void GenerateNodeContent(Node node, XmlDocument baseDocument, XmlElement parentElement) {
             if (node.DocumentationLines.Count > 0) {
-                parentElement.AppendChild(GenerateDocumentationPart(baseDocument, node.DocumentationLines));
+                nodeContent.AppendLine(GenerateDocumentationPart(node.DocumentationLines));
             }
 
             if (node.Annotation.Count > 0) {
-                parentElement.AppendChild(GenerateAnnotationPart(baseDocument, node.Annotation));
+                nodeContent.AppendLine(GenerateAnnotationPart(node.Annotation));
             }
 
             if (node.Element.Count > 0) {
-                parentElement.AppendChild(GenerateElemementPart(baseDocument, node.Element));
+                nodeContent.AppendLine(GenerateElemementPart(node.Element));
             }
 
             if (node.Message.Count > 0) {
-                parentElement.AppendChild(GenerateMessagePart(baseDocument, node.Message));
+                nodeContent.AppendLine(GenerateMessagePart(node.Message));
             }
 
             if (node.Association.Count > 0) {
-                parentElement.AppendChild(GenerateAssociationPart(baseDocument, node.Association));
+                nodeContent.AppendLine(GenerateAssociationPart(node.Association));
             }
 
             if (node.Action.Count > 0) {
-                parentElement.AppendChild(GenerateActionPart(baseDocument, node.Action));
+                nodeContent.AppendLine(GenerateActionPart(node.Action));
             }
 
             if (node.ChildNode.Count > 0) {
-                parentElement.AppendChild(GenerateNodePart(baseDocument, node.ChildNode));
+                nodeContent.AppendLine(GenerateNodePart(node.ChildNode));
             }
+
+            return nodeContent;
         }
 
-        private XmlElement GenerateAnnotationPart(XmlDocument baseDocument, LinkedList<Annotation> annotations) {
-            var annotationDiv = GetDiv(baseDocument, htmlClassAnnotationCollection);
+        private string GenerateDocumentationPart(LinkedList<string> documentationLines) {
+            var documentationCollection = GetHTMLSnippet(documentationCollectionSnippet);
 
-            annotationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Annotations", htmlClassName));
+            var documentationContent = new StringBuilder();
+            foreach (var d in documentationLines) {
+                var docItem = GetHTMLSnippet(documentationCollectionItemSnippet);
 
+                documentationContent.AppendLine(docItem.Replace(contentPlaceHolder, d));
+            }
+
+            return documentationCollection.Replace(contentPlaceHolder, documentationContent.ToString());
+        }
+
+        private string GenerateAnnotationPart(LinkedList<Annotation> annotations) {
+            var annotationCollection = GetHTMLSnippet(annotationCollectionSnippet);
+
+            var annotationContent = new StringBuilder();
             foreach (var a in annotations) {
-                annotationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassAnnotation));
+                annotationContent.AppendLine(GetHTMLSnippet(annotationCollectionItemSnippet).Replace(contentPlaceHolder, a.Name));
             }
 
-            return annotationDiv;
+            return annotationCollection.Replace(contentPlaceHolder, annotationContent.ToString());
         }
 
-        private XmlElement GenerateElemementPart(XmlDocument baseDocument, LinkedList<Element> elements) {
-            var elementDiv = GetDiv(baseDocument, htmlClassBoElementCollection);
+        private string GenerateElemementPart(LinkedList<Element> elements) {
+            var elementCollection = GetHTMLSnippet(elementCollectionSnippet);
 
-            elementDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Elements", htmlClassName));
-
+            var elemetCollectionContent = new StringBuilder();
             foreach (var e in elements) {
-                var element = GetDiv(baseDocument, htmlClassBoElement);
-                element.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, e.Name, htmlClassName));
-                element.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, e.DataType, htmlClassDataType));
+                var element = GetHTMLSnippet(elementCollectionItemSnippet).Replace(titlePlaceHolder, e.Name).Replace(dataTypePlaceHolder, e.DataType);
+                var elementContent = new StringBuilder();
+
                 if (e.DocumentationLines.Count > 0) {
-                    element.AppendChild(GenerateDocumentationPart(baseDocument, e.DocumentationLines));
+                    elementContent.AppendLine(GenerateDocumentationPart(e.DocumentationLines));
                 }
 
                 if (e.Annotation.Count > 0) {
-                    element.AppendChild(GenerateAnnotationPart(baseDocument, e.Annotation));
+                    elementContent.AppendLine(GenerateAnnotationPart(e.Annotation));
                 }
 
-                elementDiv.AppendChild(element);
+                elemetCollectionContent.AppendLine(element.Replace(contentPlaceHolder, elementContent.ToString()));
             }
 
-            return elementDiv;
+            return elementCollection.Replace(contentPlaceHolder, elemetCollectionContent.ToString());
         }
 
-        private XmlElement GenerateMessagePart(XmlDocument baseDocument, LinkedList<Message> messages) {
-            var messageDiv = GetDiv(baseDocument, htmlClassMessageCollection);
+        private string GenerateMessagePart(LinkedList<Message> messages) {
+            var messageCollection = GetHTMLSnippet(messageCollectionSnippet);
 
-            messageDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Messages", htmlClassName));
-
+            var messageCollectionContent = new StringBuilder();
             foreach (var m in messages) {
-                var message = GetDiv(baseDocument, htmlClassMessage);
-                message.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, m.Name, htmlClassName));
-                message.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, m.Text, htmlClassMessageText));
+                var message = GetHTMLSnippet(messageCollectionItemSnippet).Replace(titlePlaceHolder, m.Name).Replace(textPlaceHolder, m.Text);
+                var messageContent = new StringBuilder();
 
                 if (m.PlaceHolderDataTypes.Count > 0) {
-                    var datatypes = GetDiv(baseDocument, htmlClassMessageDataTypes);
+                    var dataTypesCollection = GetHTMLSnippet(dataTypeCollectionSnippet);
 
+                    var dataTypesCollectionContent = new StringBuilder();
                     foreach (var dt in m.PlaceHolderDataTypes) {
-                        datatypes.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, dt, htmlClassDataType));
+                        dataTypesCollectionContent.AppendLine(GetHTMLSnippet(dataTypeCollectionItemSnippet).Replace(dataTypePlaceHolder, dt));
                     }
 
-                    message.AppendChild(datatypes);
+                    messageContent.AppendLine(dataTypesCollection.Replace(contentPlaceHolder, dataTypesCollectionContent.ToString()));
                 }
 
                 if (m.DocumentationLines.Count > 0) {
-                    message.AppendChild(GenerateDocumentationPart(baseDocument, m.DocumentationLines));
+                    messageContent.AppendLine(GenerateDocumentationPart(m.DocumentationLines));
                 }
 
-                messageDiv.AppendChild(message);
+                messageCollectionContent.AppendLine(message.Replace(contentPlaceHolder, messageContent.ToString()));
             }
 
-            return messageDiv;
+            return messageCollection.Replace(contentPlaceHolder, messageCollectionContent.ToString());
         }
 
-        private XmlElement GenerateAssociationPart(XmlDocument baseDocument, LinkedList<Association> associations) {
-            var associationDiv = GetDiv(baseDocument, htmlClassAssociationCollection);
-
-            associationDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Associations", htmlClassName));
+        private string GenerateAssociationPart(LinkedList<Association> associations) {
+            var associationCollection = GetHTMLSnippet(associationCollectionSnippet);
+            var associationCollectionContent = new StringBuilder();
 
             foreach (var a in associations) {
-                var association = GetDiv(baseDocument, htmlClassAssociation);
+                var association = GetHTMLSnippet(associationCollectionItemSnippet).Replace(titlePlaceHolder, a.Name).Replace(targetPlaceHolder, a.Target).Replace(multiplicityPlaceHolder, GetMultiplicityText(a.Multiplicity));
 
-                association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassName));
-                association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Target, htmlClassAssociationTarget));
-                association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(a.Multiplicity), htmlClassMultiplicity));
+                var associationContent = new StringBuilder();
                 if (a.ContainsValuation) {
-                    association.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Valuation, htmlClassAssociationValuation));
+                    associationContent.AppendLine(GetHTMLSnippet(valuationSnippet).Replace(contentPlaceHolder, a.Valuation));
                 }
                 if (a.DocumentationLines.Count > 0) {
-                    association.AppendChild(GenerateDocumentationPart(baseDocument, a.DocumentationLines));
+                    associationContent.AppendLine(GenerateDocumentationPart(a.DocumentationLines));
                 }
 
                 if (a.Annotation.Count > 0) {
-                    association.AppendChild(GenerateAnnotationPart(baseDocument, a.Annotation));
+                    associationContent.AppendLine(GenerateAnnotationPart(a.Annotation));
                 }
 
-                associationDiv.AppendChild(association);
+                associationCollectionContent.AppendLine(association.Replace(contentPlaceHolder, associationContent.ToString()));
             }
 
-            return associationDiv;
+            return associationCollection.Replace(contentPlaceHolder, associationCollectionContent.ToString());
         }
 
-        private XmlElement GenerateActionPart(XmlDocument baseDocument, LinkedList<SolutionDocumentationGenerator.Model.Action> action) {
-            var actionDiv = GetDiv(baseDocument, htmlClassActionCollection);
+        private string GenerateActionPart(LinkedList<SolutionDocumentationGenerator.Model.Action> action) {
+            var actionCollection = GetHTMLSnippet(actionCollectionSnippet);
 
-            actionDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Actions", htmlClassName));
-
+            var actionCollectionContent = new StringBuilder();
             foreach (var a in action) {
-                var actionElement = GetDiv(baseDocument, htmlClassAction);
-                actionElement.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, a.Name, htmlClassName));
+                var actionElement = GetHTMLSnippet(actionCollectionItemSnippet).Replace(titlePlaceHolder, a.Name);
+                var docu = string.Empty;
                 if (a.DocumentationLines.Count > 0) {
-                    actionElement.AppendChild(GenerateDocumentationPart(baseDocument, a.DocumentationLines));
+                    docu = GenerateDocumentationPart(a.DocumentationLines);
                 }
 
-                actionDiv.AppendChild(actionElement);
+                actionCollectionContent.AppendLine(actionElement.Replace(contentPlaceHolder, docu));
             }
 
-            return actionDiv;
+            return actionCollection.Replace(contentPlaceHolder, actionCollectionContent.ToString());
         }
 
-        private XmlElement GenerateNodePart(XmlDocument baseDocument, LinkedList<Node> nodes) {
-            var nodeDiv = GetDiv(baseDocument, "nodecollection");
+        private string GenerateNodePart(LinkedList<Node> nodes) {
+            var nodeCollection = GetHTMLSnippet(nodeCollectionSnippet);
 
-            nodeDiv.AppendChild(GetSimpleHTMLElement(baseDocument, htmlH2, "Nodes", htmlClassName));
-
+            var nodeCollectionContent = new StringBuilder();
             foreach (var n in nodes) {
-                var node = GetDiv(baseDocument, "node");
+                var node = GetHTMLSnippet(nodeCollectionItemSnippet).Replace(titlePlaceHolder, n.Name).Replace(multiplicityPlaceHolder, GetMultiplicityText(n.Multiplicity));
 
-                node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, n.Name, htmlClassName));
-                node.AppendChild(GetSimpleHTMLElement(baseDocument, htmlTextOutputElement, GetMultiplicityText(n.Multiplicity), htmlClassMultiplicity));
-
+                var nodeContent = new StringBuilder();
                 if (n.DocumentationLines.Count > 0) {
-                    node.AppendChild(GenerateDocumentationPart(baseDocument, n.DocumentationLines));
+                    nodeContent.AppendLine(GenerateDocumentationPart(n.DocumentationLines));
                 }
 
-                GenerateNodeContent(n, baseDocument, node);
+                nodeContent.Append(GenerateNodeContent(n));
 
-                nodeDiv.AppendChild(node);
+                nodeCollectionContent.AppendLine(node.Replace(contentPlaceHolder, nodeContent.ToString()));
             }
 
-            return nodeDiv;
+            return nodeCollection.Replace(contentPlaceHolder, nodeCollectionContent.ToString());
         }
 
         private string GetMultiplicityText(Multiplicity multiplicity) {
@@ -320,74 +296,68 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
             return returnText;
         }
 
-        private XmlElement GetDiv(XmlDocument baseDocument) {
-            return baseDocument.CreateElement(htmlDiv);
+        private StringBuilder GetBaseHtmlDocument(string title) {
+            var str = new StringBuilder(GetHTMLSnippet(baseDocumentSnippet));
+            return str.Replace(titlePlaceHolder, title);
         }
 
-        private XmlElement GetDiv(XmlDocument baseDocument, string classValue) {
-            var div = GetDiv(baseDocument);
-
-            div.Attributes.Append(GetClass(baseDocument, classValue));
-
-            return div;
+        private string CurrentTheme {
+            get {
+                if (configuration.Theme != null && configuration.Theme.Trim().Length > 0) {
+                    var themeName = configuration.Theme.Trim();
+                    var themePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, themeName);
+                    if (Directory.Exists(themePath)) {
+                        return themeName;
+                    }
+                }
+                return "default";
+            }
         }
 
-        private XmlNode GetSimpleHTMLElement(XmlDocument baseDocument, string title, string textValue) {
-            var element = baseDocument.CreateElement(title);
-            element.AppendChild(baseDocument.CreateTextNode(textValue));
-
-            return element;
+        private string GetHTMLSnippet(string snippetName) {
+            var fileName = string.Format("{0}.html", snippetName);
+            var snippetPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Themes", CurrentTheme, fileName);
+            if (File.Exists(snippetPath)) {
+                using (var reader = new StreamReader(snippetPath)) {
+                    return reader.ReadToEnd();
+                }
+            } else {
+                throw new FileNotFoundException(string.Format("Snippet File {0} in Theme {1} not found", snippetName, CurrentTheme));
+            }
         }
 
-        private XmlNode GetSimpleHTMLElement(XmlDocument baseDocument, string title, string textValue, string classValue) {
-            var element = GetSimpleHTMLElement(baseDocument, title, textValue);
-
-
-            element.Attributes.Append(GetClass(baseDocument, classValue));
-
-            return element;
+        private void CopyStyleFiles() {
+            var stylePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Themes", CurrentTheme, "style");
+            var styleTargetPath = System.IO.Path.Combine(configuration.OutputDir, "style");
+            CopyDirectory(stylePath, styleTargetPath);
         }
 
-        private XmlAttribute GetClass(XmlDocument baseDocument, string value) {
-            var elementAttribute = baseDocument.CreateAttribute(htmlClass);
-            elementAttribute.Value = value;
+        private void CopyDirectory(string sourceDirPath, string targetDirPath) {
+            if (Directory.Exists(targetDirPath)) {
+                Directory.Delete(targetDirPath, true);
+            }
 
-            return elementAttribute;
+            Directory.CreateDirectory(targetDirPath);
+
+            var sourceDirInfo = new DirectoryInfo(sourceDirPath);
+            foreach (DirectoryInfo d in sourceDirInfo.GetDirectories()) {
+                string temppath = Path.Combine(targetDirPath, d.Name);
+                CopyDirectory(d.FullName, temppath);
+            }
+
+            foreach (var f in sourceDirInfo.GetFiles()) {
+                f.CopyTo(Path.Combine(targetDirPath, f.Name));
+            }
         }
 
-        private XmlDocument GetBaseHtmlDocument(string title) {
-            var htmlDoc = new XmlDocument();
-            var docType = htmlDoc.CreateDocumentType(html, null, null, null);
-            htmlDoc.AppendChild(docType);
-            var root = htmlDoc.CreateElement(html);
-            htmlDoc.AppendChild(root);
+        private void WriteFile(string path, StringBuilder content) {
+            if (File.Exists(path)) {
+                File.Delete(path);
+            }
 
-            var head = htmlDoc.CreateElement(htmlHead);
-            root.AppendChild(head);
-
-            var metadata = htmlDoc.CreateElement("meta");
-            var charset = htmlDoc.CreateAttribute("charset");
-            charset.Value = "utf-8";
-            metadata.Attributes.Append(charset);
-            head.AppendChild(metadata);
-
-            var css = htmlDoc.CreateElement("link");
-            var href = htmlDoc.CreateAttribute("href");
-            href.Value = "./style.css";
-            css.Attributes.Append(href);
-            var type = htmlDoc.CreateAttribute("type");
-            type.Value = "text/css";
-            css.Attributes.Append(type);
-            var rel = htmlDoc.CreateAttribute("rel");
-            rel.Value = "stylesheet";
-            css.Attributes.Append(rel);
-            head.AppendChild(css);
-
-            var titleElement = htmlDoc.CreateElement("title");
-            titleElement.AppendChild(htmlDoc.CreateTextNode(title));
-            head.AppendChild(titleElement);
-
-            return htmlDoc;
+            using (var writer = new StreamWriter(path)) {
+                writer.Write(content.ToString());
+            }
         }
     }
 }

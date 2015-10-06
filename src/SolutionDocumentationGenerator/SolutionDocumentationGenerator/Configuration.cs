@@ -11,6 +11,7 @@ namespace SolutionDocumentationGenerator {
             Verbose = false;
             SolutionPath = string.Empty;
             OutputDir = string.Empty;
+            Theme = string.Empty;
         }
 
         public bool Verbose;
@@ -18,5 +19,7 @@ namespace SolutionDocumentationGenerator {
         public string SolutionPath;
 
         public string OutputDir;
+
+        public string Theme;
     }
 }
