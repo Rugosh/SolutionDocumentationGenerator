@@ -1,9 +1,9 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using SolutionDocumentationGenerator.Parser;
 
 namespace SolutionDocumentationGenerator.Test.Parser.Test {
-    [TestClass]
+    [TestFixture]
     public class SolutionFileParserTest {
         private Configuration TestConfiguration;
 
@@ -12,7 +12,7 @@ namespace SolutionDocumentationGenerator.Test.Parser.Test {
             TestConfiguration.Verbose = true;
         }
 
-        [TestMethod]
+        [Test]
         public void BasicSolutionFileParseTest() {
             var parser = new SolutionFileParser(TestConfiguration);
             var testSolutionContent = @"<?xml version=""1.0"" encoding=""utf-8""?>
