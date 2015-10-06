@@ -1,10 +1,10 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SolutionDocumentationGenerator.Model;
 using SolutionDocumentationGenerator.Parser;
+using NUnit.Framework;
 
 namespace SolutionDocumentationGenerator.Test.Parser.Test {
-    [TestClass]
+    [TestFixture]
     public class BusinessObjectParserTest {
 
         private Configuration TestConfiguration;
@@ -14,7 +14,7 @@ namespace SolutionDocumentationGenerator.Test.Parser.Test {
             TestConfiguration.Verbose = true;
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -39,7 +39,7 @@ businessobject TestBO {
         }
 
 
-        [TestMethod]
+        [Test]
         public void SimpleUgliefiedBusinessObjectTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;businessobject TestBO{element TestBO_ID:ID;}";
 
@@ -58,7 +58,7 @@ businessobject TestBO {
             Assert.AreEqual(0, e.Annotation.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithAssociationTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -91,7 +91,7 @@ businessobject TestBO {
             Assert.AreEqual("Customer", a.Target);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithAssociationAndValuationTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -128,7 +128,7 @@ businessobject TestBO {
             Assert.AreEqual("TestBO", a.Target);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithAnnotaionTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -156,7 +156,7 @@ businessobject TestBO {
             Assert.AreEqual("AlternativeKey", e.Annotation.First.Value.Name);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithMessageTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -188,7 +188,7 @@ businessobject TestBO {
             Assert.AreEqual(0, m.PlaceHolderDataTypes.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithMessageAndParametersTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -221,7 +221,7 @@ businessobject TestBO {
             Assert.AreEqual("LANGUAGEINDEPENDENT_EXTENDED_Text", m.PlaceHolderDataTypes.First.Value);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithNodeTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -265,7 +265,7 @@ businessobject TestBO {
             Assert.AreEqual(1, parsedBo.ChildNode.First.Value.Association.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithNodesTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -304,7 +304,7 @@ businessobject TestBO {
             Assert.AreEqual(2, parsedBo.ChildNode.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithNodeHierarchieTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -353,7 +353,7 @@ businessobject TestBO {
             Assert.AreEqual(1, parsedBo.ChildNode.First.Value.ChildNode.First.Value.ChildNode.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void SimpleBusinessObjectWithSpecialNodesTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
@@ -387,7 +387,7 @@ businessobject TestBO {
             Assert.AreEqual(2, parsedBo.ChildNode.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void BusinessObjectWithDocumentationTest() {
             var boText = @"import AP.Common.GDT as apCommonGDT;
 
