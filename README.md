@@ -1,5 +1,6 @@
 SolutionDocumentationGenerator
 ============
+[![Build Status](https://travis-ci.org/Rugosh/SolutionDocumentationGenerator.svg?branch=master)](https://travis-ci.org/Rugosh/SolutionDocumentationGenerator)
 
 # Introduction
 Documentation Generator for SAP Cloud Solutions (e.g. SAP Business ByDesing Solutions).

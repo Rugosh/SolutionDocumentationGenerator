@@ -1,2 +1,8 @@
 language: csharp
 solution: ./src/SolutionDocumentationGenerator/SolutionDocumentationGenerator.sln
+install:
+  - nuget restore ./src/SolutionDocumentationGenerator/SolutionDocumentationGenerator.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release ./src/SolutionDocumentationGenerator/SolutionDocumentationGenerator.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./src/SolutionDocumentationGenerator/SolutionDocumentationGenerator.Test/bin/Release/SolutionDocumentationGenerator.Test.dll
