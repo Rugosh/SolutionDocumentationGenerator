@@ -16,12 +16,18 @@ namespace SolutionDocumentationGenerator {
                 return;
             }
 
+            var nextIsTheme = false;
             foreach (var i in args) {
-                if (i == "-v" || i == "--verbose") {
+                if (nextIsTheme) {
+                    configuration.Theme = i;
+                    nextIsTheme = false;
+                } else if (i == "-v" || i == "--verbose") {
                     configuration.Verbose = true;
                 } else if (i == "-h" || i == "--help") {
-                    
-                }else {
+                    PrintHelp();
+                } else if (i == "--theme") {
+                    nextIsTheme = true;
+                } else {
                     if (configuration.SolutionPath == string.Empty) {
                         configuration.SolutionPath = i;
                     } else {
@@ -72,6 +78,8 @@ namespace SolutionDocumentationGenerator {
             Console.WriteLine("\tPrints more information out to the console");
             Console.WriteLine("-h|--help");
             Console.WriteLine("\tShow this help");
+            Console.WriteLine("--theme <themeName>");
+            Console.WriteLine("\tUse an other Theme and give the <themeName>");
             Console.WriteLine("Usage Example");
             var examplePath = @"C:\Users\tok\Documents\CopernicusIsolatedShell\Projects\_DEV\YEKRNL1PY";
             Console.WriteLine(string.Format("\tSolutionDocumentationGenerator.exe -v {0}", examplePath));

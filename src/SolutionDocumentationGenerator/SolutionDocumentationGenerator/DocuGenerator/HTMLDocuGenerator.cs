@@ -47,6 +47,7 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
         public void GenerateDocumenation(Solution solution) {
             if (configuration.Verbose) {
                 Console.WriteLine("Generate HTML Documentation");
+                Console.WriteLine(string.Format("Use theme {0}", CurrentTheme));
             }
 
             var businessObjects = new Dictionary<string, string>();
@@ -301,16 +302,28 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
             return str.Replace(titlePlaceHolder, title);
         }
 
+        private string currentTheme = null;
         private string CurrentTheme {
             get {
-                if (configuration.Theme != null && configuration.Theme.Trim().Length > 0) {
-                    var themeName = configuration.Theme.Trim();
-                    var themePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, themeName);
-                    if (Directory.Exists(themePath)) {
-                        return themeName;
+                if (currentTheme == null) {
+
+                    if (configuration.Theme != null && configuration.Theme.Trim().Length > 0) {
+                        var themeName = configuration.Theme.Trim();
+                        var themePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Themes", themeName);
+                        if (Directory.Exists(themePath)) {
+                            currentTheme = themeName;
+                        } else {
+                            Console.WriteLine(string.Format("Theme {0} not found switching to Theme \"default\"", themeName));
+                            currentTheme = "default";
+                        }
+                    } else {
+                        if (configuration.Verbose) {
+                            Console.WriteLine("No Theme set. Using Theme default.");
+                        }
+                        currentTheme = "default";
                     }
                 }
-                return "default";
+                return currentTheme ;
             }
         }
 
