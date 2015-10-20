@@ -14,10 +14,19 @@ h2 {
 footer {
     position: fixed;
     bottom: 0px;
-    background: #efefef;
     text-align: center;
     padding: 10px;
     width: 100%;
+}
+
+.content{
+    border:solid;
+    border-width:thin;
+    border-color:gray;
+}
+
+.container{
+    margin-bottom:50px;
 }
 
 .name {
@@ -41,22 +50,16 @@ footer {
 .nodecollection {
     margin-left: 15px;
     margin-top: 10px;
-    border-style: solid;
-    border-width: 1px;
 }
 
 .node {
     margin-left: 15px;
     margin-top: 10px;
-    border-style: solid;
-    border-width: 1px;
 }
 
 .elementcollection {
     margin-left: 15px;
     margin-top: 10px;
-    border-style: dotted;
-    border-width: 1px;
 }
 
 .element {
@@ -67,8 +70,6 @@ footer {
 .messagecollection {
     margin-left: 15px;
     margin-top: 10px;
-    border-style: dotted;
-    border-width: 1px;
 }
 
 .message {
@@ -79,8 +80,6 @@ footer {
 .associationcollection {
     margin-left: 15px;
     margin-top: 10px;
-    border-style: dotted;
-    border-width: 1px;
 }
 
 .association {
@@ -91,8 +90,6 @@ footer {
 .actioncollection {
     margin-left: 15px;
     margin-top: 10px;
-    border-style: dotted;
-    border-width: 1px;
 }
 
 .action {
@@ -103,15 +100,17 @@ footer {
 .annotationcollection {
     margin-left: 15px;
     margin-top: 10px;
-    border-style: dotted;
-    border-width: 1px;
 }
 
 .annotation {
-    font-weight: bold;
     font-size: 16px;
 }
 
 .element .annotationcollection h2 {
     font-size: 14px;
+}
+
+.panel-heading{
+    font-weight: bold;
+    font-size: 16px;
 }
