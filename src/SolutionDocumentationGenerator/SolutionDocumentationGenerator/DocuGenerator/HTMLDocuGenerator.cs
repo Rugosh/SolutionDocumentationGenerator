@@ -265,10 +265,6 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
                 var node = GetHTMLSnippet(nodeCollectionItemSnippet).Replace(titlePlaceHolder, n.Name).Replace(multiplicityPlaceHolder, GetMultiplicityText(n.Multiplicity));
 
                 var nodeContent = new StringBuilder();
-                if (n.DocumentationLines.Count > 0) {
-                    nodeContent.AppendLine(GenerateDocumentationPart(n.DocumentationLines));
-                }
-
                 nodeContent.Append(GenerateNodeContent(n));
 
                 nodeCollectionContent.AppendLine(node.Replace(contentPlaceHolder, nodeContent.ToString()));
