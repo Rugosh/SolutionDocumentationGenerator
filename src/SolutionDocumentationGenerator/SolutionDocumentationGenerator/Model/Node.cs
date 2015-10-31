@@ -25,6 +25,8 @@ namespace SolutionDocumentationGenerator.Model {
 
         public LinkedList<Association> Association;
 
+        public LinkedList<string> RaisedMessages;
+
         public Node()
             : base() {
             this.NodeType = NodeType.Node;
@@ -34,6 +36,7 @@ namespace SolutionDocumentationGenerator.Model {
             this.Message = new LinkedList<Message>();
             this.Action = new LinkedList<Action>();
             this.Association = new LinkedList<Association>();
+            this.RaisedMessages = new LinkedList<string>();
         }
 
         public override string ToString() {

@@ -247,6 +247,15 @@ namespace SolutionDocumentationGenerator.Parser {
             line = line.Split(SPACER, 2, StringSplitOptions.RemoveEmptyEntries)[1];
             line = CleanLineEnding(line);
 
+            if (line.Contains("raises")) {
+                var splitedRaises = line.Split(new string[1] { "raises" }, 2, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var raise in splitedRaises.Last().Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
+                    node.RaisedMessages.AddLast(raise.Trim());
+                }
+
+                line = splitedRaises.First();
+            }
+
             if (line.Contains("[")) {
                 var splittedLine = line.Split(new string[1] { "[" }, 2, StringSplitOptions.RemoveEmptyEntries);
                 node.Name = splittedLine.First();
