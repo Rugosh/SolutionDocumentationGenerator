@@ -13,11 +13,14 @@ namespace SolutionDocumentationGenerator.Model {
 
         public LinkedList<Annotation> Annotation;
 
+        public string DefaultValue;
+
         public Element()
             : base() {
             this.Name = string.Empty;
             this.DataType = string.Empty;
             this.Annotation = new LinkedList<Annotation>();
+            this.DefaultValue = string.Empty;
         }
 
         public override string ToString() {

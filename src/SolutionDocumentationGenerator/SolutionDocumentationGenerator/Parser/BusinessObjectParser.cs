@@ -41,8 +41,22 @@ namespace SolutionDocumentationGenerator.Parser {
             boText = boText.Replace("///", "\n///");
 
             newBoText = new StringBuilder();
+            var bufferLine = string.Empty;
             foreach (var l in boText.Split('\n')) {
                 var line = l.Trim();
+                if (bufferLine.Length > 0) {
+                    bufferLine += line;
+                    if (line.Contains("}")) {
+                        newBoText.AppendLine(bufferLine);
+                        bufferLine = string.Empty;
+                    } else {
+                        continue;
+                    }
+                } else if (line.Replace(" ", "").EndsWith("={")) {
+                    bufferLine += line;
+                    continue;
+                }
+
                 if (line.Length > 0) {
                     newBoText.AppendLine(line);
                 }
@@ -156,7 +170,17 @@ namespace SolutionDocumentationGenerator.Parser {
 
             var elementSplitValues = elementNameAndDataType.Split(new char[1] { ':' }, StringSplitOptions.RemoveEmptyEntries);
             newElement.Name = elementSplitValues[0].Trim();
-            newElement.DataType = CleanLineEnding(elementSplitValues[1]).Trim();
+
+            var datatypeAndDefaultValue = CleanLineEnding(elementSplitValues[1]).Trim();
+            if (datatypeAndDefaultValue.Contains("=")) {
+                var splitedDatatypeAndDefaultValue = datatypeAndDefaultValue.Split(new char[1] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+
+                newElement.DefaultValue = splitedDatatypeAndDefaultValue.Last().Trim();
+
+                datatypeAndDefaultValue = splitedDatatypeAndDefaultValue.First();
+            }
+
+            newElement.DataType = datatypeAndDefaultValue;
 
             newElement.Annotation = annotation;
             return newElement;
