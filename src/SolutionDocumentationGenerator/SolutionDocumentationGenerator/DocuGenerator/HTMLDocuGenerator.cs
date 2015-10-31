@@ -28,6 +28,7 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
         private const string associationCollectionItemSnippet = "AssociationCollectionItem";
         private const string dataTypeCollectionSnippet = "DataTypeCollection";
         private const string dataTypeCollectionItemSnippet = "DataTypeCollectionItem";
+        private const string defaultValueSnippet = "DefaultValue";
         private const string documentationCollectionSnippet = "DocumentationCollection";
         private const string documentationCollectionItemSnippet = "DocumentationCollectionItem";
         private const string elementCollectionSnippet = "ElementCollection";
@@ -171,6 +172,11 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
             foreach (var e in elements) {
                 var element = GetHTMLSnippet(elementCollectionItemSnippet).Replace(titlePlaceHolder, e.Name).Replace(dataTypePlaceHolder, e.DataType);
                 var elementContent = new StringBuilder();
+
+                if (e.DefaultValue != null && e.DefaultValue != string.Empty) {
+                    var defaultValue = GetHTMLSnippet(defaultValueSnippet).Replace(textPlaceHolder, e.DefaultValue);
+                    elementContent.AppendLine(defaultValue);
+                }
 
                 if (e.DocumentationLines.Count > 0) {
                     elementContent.AppendLine(GenerateDocumentationPart(e.DocumentationLines));
@@ -319,7 +325,7 @@ namespace SolutionDocumentationGenerator.DocuGenerator {
                         currentTheme = "default";
                     }
                 }
-                return currentTheme ;
+                return currentTheme;
             }
         }
 
